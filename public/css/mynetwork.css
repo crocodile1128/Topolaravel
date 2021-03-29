@@ -1,9 +1,10 @@
 body {
     font: 10pt arial;
 }
+
 #mynetwork {
     background: #FFFFFF;
-    width: 1400px;
-    height: 560px;
+    width: 1920px;
+    height: 900px;
     border: 1px solid lightgray;
 }

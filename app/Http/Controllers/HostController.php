@@ -6,9 +6,15 @@ use Illuminate\Http\Request;
 
 class HostController extends Controller
 {
+    public function __construct()
+    {
+
+    }
+
     public function index()
     {
-        return view('host.index');
+        $hosts = [];
+        return view('host.index', array('hosts' => $hosts));
     }
 
     public function upload(Request $request)
@@ -27,7 +33,9 @@ class HostController extends Controller
     public function show()
     {
         $json = file_get_contents('files/hosts.json');
-        dd((json_decode($json, true)));
-        return view('host.index');
+        $hosts = json_decode($json, true);
+        // foreach($hosts as $key=>$val)
+        //     dd($val['Queried DNS']);
+        return view('host.index', array('hosts' => $hosts));
     }
 }
