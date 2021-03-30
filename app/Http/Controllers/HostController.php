@@ -34,8 +34,7 @@ class HostController extends Controller
     {
         $json = file_get_contents('files/hosts.json');
         $hosts = json_decode($json, true);
-        // foreach($hosts as $key=>$val)
-        //     dd($val['Queried DNS']);
+        // dd($hosts);
         return view('host.index', array('hosts' => $hosts));
     }
 }

@@ -23,44 +23,36 @@
         // create an array with nodes
         var nodes = new vis.DataSet([
             <?php
-                for($i=0; $i < count($srcip); $i++){
-                    // Windows
-                    if ($hosts[$srcip[$i]]["OS"] == "Windows")
-                        print ("{ id: " . $i . ", label:'" . $srcip[$i] . "', shape: 'image', image: 'img/windows.jpg' },");
-                    // Linux
-                    else if ($hosts[$srcip[$i]]["OS"] == "Linux")
-                        print ("{ id: " . $i . ", label:'" . $srcip[$i] . "', shape: 'image', image: 'img/linux.jpg' },");
-                    // Android
-                    else if ($hosts[$srcip[$i]]["OS"] == "Linux")
-                        print ("{ id: " . $i . ", label:'" . $srcip[$i] . "', shape: 'image', image: 'img/android.jpg' },");
-                    // Unknown
-                    else
-                        print ("{ id: " . $i . ", label:'" . $srcip[$i] . "', shape: 'image', image: 'img/computer.jpg' },");
-                }
-                $j = $i;
+                $i = 0;
+                $host2id = [];
+                $host = [];
+                $id = [];
+                foreach($hosts as $key=>$value)
+                {
+                    if($key != "test"){
+                        $label = $value["IP"] . '\n' . "test";
+                        if ($value["OS"] == "Windows")
+                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/windows.jpg" },');
+                        else if ($value["OS"] == "Linux")
+                            print ("{ id: " . $i . ", label:'" . $label . "', shape: 'image', image: 'img/linux.jpg' },");
+                        else if ($value["OS"] == "Android")
+                            print ("{ id: " . $i . ", label:'" . $label . "', shape: 'image', image: 'img/android.jpg' },");
+                        else
+                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/computer.jpg" },');
 
-                for($i = 0; $i < count($dstip); $i++){
-                    // Windows
-                    // dd($hosts);
-                    if ($hosts[$dstip[$i]]["OS"] == "Windows")
-                        print ("{ id: " . $i+$j . ", label:'" . $dstip[$i] . "', shape: 'image', image: 'img/windows.jpg' },");
-                    // Linux
-                    else if ($hosts[$dstip[$i]]["OS"] == "Linux")
-                        print ("{ id: " . $i+$j . ", label:'" . $dstip[$i] . "', shape: 'image', image: 'img/linux.jpg' },");
-                    // Android
-                    else if ($hosts[$dstip[$i]]["OS"] == "Linux")
-                        print ("{ id: " . $i+$j . ", label:'" . $dstip[$i] . "', shape: 'image', image: 'img/android.jpg' },");
-                    // Unknown
-                    else
-                        print ("{ id: " . $i+$j . ", label:'" . $dstip[$i] . "', shape: 'image', image: 'img/computer.jpg' },");
+                        array_push($host, $value["IP"]);
+                        $i++;
+                    }
                 }
+                $host2id = array_flip($host);
+                //dd($host2id);
             ?>
         ]);
         // create an array with edges
         var edges = new vis.DataSet([
             <?php
                 for($i=0; $i < count($srcip); $i++){
-                    print ("{ from: " . $i . ", to:" . $i+8 . ", color: { color: 'blue' } },");
+                    print ("{ from: " . $host2id[$srcip[$i]] . ", to:" . $host2id[$dstip[$i]] . ", color: { color: 'blue' } },");
                 }
             ?>
         ]);
@@ -79,6 +71,9 @@
                     color: "#000000",
                 },
             },
+            physics: {
+                enabled: false
+            }
         };
         var network = new vis.Network(container, data, options);
     </script>
