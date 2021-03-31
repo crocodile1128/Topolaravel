@@ -24,7 +24,7 @@
     <div class="flex p-6">
         {{-- Tables --}}
         <div class="shadow overflow-hidden w-2/3 sm:rounded-lg p-4">
-            <table id="data-table" class="bg-green-200  col-start-3 col-end-12">
+            <table id="data-table" class="bg-pink-200  col-start-3 col-end-12">
                 <thead>
                     <tr>
                         <th>Host</th>
@@ -37,7 +37,7 @@
                 <tbody>
                     @foreach($hosts as $key=>$val)
                         @if($key!="test")
-                        <tr class="hover:bg-green-300 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-300 hover:border-transparent rounded">
+                        <tr class="hover:bg-pink-300 text-pink-700 font-semibold hover:text-white py-2 px-4 border border-pink-300 hover:border-transparent rounded">
                             <th>{{ $val["IP"] }}</th>
                             @if($val["MAC"] != "Unknown MAC")
                                 <th>{{ implode(":", str_split($val["MAC"], 2)) }}</th>
