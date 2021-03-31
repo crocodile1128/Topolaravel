@@ -23,7 +23,7 @@
     </div>
     <div class="flex p-6">
         {{-- Tables --}}
-        <div class="flex pr-4 w-2/3">
+        <div class="shadow overflow-hidden w-2/3 sm:rounded-lg p-4">
             <table id="data-table" class="bg-green-200  col-start-3 col-end-12">
                 <thead>
                     <tr>
