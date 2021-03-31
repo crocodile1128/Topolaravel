@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HostController;
-use App\Http\Controllers\GraphController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\GraphDeviceController;
+use App\Http\Controllers\GraphSessionController;
 use App\Http\Controllers\Auth\RegisterController;
 /*
 |--------------------------------------------------------------------------
@@ -17,17 +18,18 @@ use App\Http\Controllers\Auth\RegisterController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+// Route::get('/', function () {
+//     return view('home');
+// })->name('home');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/host', [HostController::class, 'index'])->name('host');
 Route::post('/upload', [HostController::class, 'upload'])->name('upload');
 Route::post('/show', [HostController::class, 'show'])->name('show');
 
-Route::get('/graph', [GraphController::class, 'index'])->name('graph');
+Route::get('/graph0', [GraphDeviceController::class, 'index'])->name('graph0');
+Route::get('/graph1', [GraphSessionController::class, 'index'])->name('graph1');
 
 Route::post('/logout', [LogoutController::class, 'store'])->name('logout');
 

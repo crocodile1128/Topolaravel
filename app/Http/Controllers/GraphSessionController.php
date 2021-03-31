@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 
-class GraphController extends Controller
+class GraphSessionController extends Controller
 {
     public function index()
     {
@@ -39,7 +39,7 @@ class GraphController extends Controller
                 }
         }
         // dd($hosts["13.35.37.66"]["OS"]);
-        return view('graph.index', array(
+        return view('graph.index1', array(
             'hosts' => $hosts,
             'srcip' => $srcip,
             'dstip' => $dstip

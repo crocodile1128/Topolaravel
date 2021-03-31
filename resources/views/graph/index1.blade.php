@@ -30,6 +30,7 @@
                 foreach($hosts as $key=>$value)
                 {
                     if($key != "test"){
+                        //dd($value);
                         $label = $value["IP"] . '\n' . "test";
                         if ($value["OS"] == "Windows")
                             print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/windows.jpg" },');
@@ -63,17 +64,71 @@
             nodes: nodes,
             edges: edges,
         };
+        // var options = {
+        //     nodes: {
+        //         shape: "circle",
+        //         font: {
+        //             size: 12,
+        //             color: "#000000",
+        //         },
+        //     },
+        //     physics: {
+        //         enabled: false
+        //     }
+        // };
+
         var options = {
-            nodes: {
-                shape: "circle",
-                font: {
-                    size: 12,
-                    color: "#000000",
-                },
+          nodes: {
+            shape: "dot",
+            scaling: {
+              min: 10,
+              max: 30,
             },
-            physics: {
-                enabled: false
-            }
+            font: {
+              size: 12,
+              face: "Tahoma",
+            },
+          },
+          edges: {
+            color: { inherit: true },
+            width: 0.15,
+            smooth: {
+              type: "continuous",
+            },
+          },
+          interaction: {
+            hideEdgesOnDrag: true,
+            tooltipDelay: 200,
+          },
+          configure: {
+            filter: function (option, path) {
+              if (option === "inherit") {
+                return true;
+              }
+              if (option === "type" && path.indexOf("smooth") !== -1) {
+                return true;
+              }
+              if (option === "roundness") {
+                return true;
+              }
+              if (option === "hideEdgesOnDrag") {
+                return true;
+              }
+              if (option === "hideNodesOnDrag") {
+                return true;
+              }
+              return false;
+            },
+
+          },
+          physics: {
+            stabilization: false,
+            barnesHut: {
+              gravitationalConstant: -8000,
+              springConstant: 0.0001,
+              springLength: 2,
+            },
+          },
         };
         var network = new vis.Network(container, data, options);
     </script>

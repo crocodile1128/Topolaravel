@@ -16,15 +16,18 @@
         <ul class="flex items-center">
             {{-- <li>
                 <a href="/" class="p-3">Home</a>
-            </li>
+            </li> --}}
             <li>
                 <a href="{{ route('dashboard') }}" class="p-3">Dashboard</a>
-            </li> --}}
+            </li>
             <li>
                 <a href="{{ route('host') }}" class="p-3">Host</a>
             </li>
             <li>
-                <a href="{{ route('graph') }}" class="p-3">Graph</a>
+                <a href="{{ route('graph0') }}" class="p-3">Graph - MAC to IP</a>
+            </li>
+            <li>
+                <a href="{{ route('graph1') }}" class="p-3">Graph - By Session</a>
             </li>
         </ul>
         {{-- <ul class="flex items-center">
