@@ -27,6 +27,7 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/host', [HostController::class, 'index'])->name('host');
 Route::post('/upload', [HostController::class, 'upload'])->name('upload');
 Route::post('/show', [HostController::class, 'show'])->name('show');
+Route::get('/detail/{host}', [HostController::class, 'detail'])->name('detail');
 
 Route::get('/graph0', [GraphDeviceController::class, 'index'])->name('graph0');
 Route::get('/graph1', [GraphSessionController::class, 'index'])->name('graph1');

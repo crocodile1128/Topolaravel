@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class HostController extends Controller
 {
@@ -32,9 +33,19 @@ class HostController extends Controller
 
     public function show()
     {
+
         $json = file_get_contents('files/hosts.json');
         $hosts = json_decode($json, true);
         // dd($hosts);
         return view('host.index', array('hosts' => $hosts));
+    }
+
+    public function detail(Request $request, $host)
+    {
+        $json = file_get_contents('files/hosts.json');
+        $hosts = json_decode($json, true);
+        return view('host.detail', array(
+            'host' =>$hosts[$host],
+        ));
     }
 }
