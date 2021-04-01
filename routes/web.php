@@ -30,7 +30,9 @@ Route::post('/show', [HostController::class, 'show'])->name('show');
 Route::get('/detail/{host}', [HostController::class, 'detail'])->name('detail');
 
 Route::get('/graph0', [GraphDeviceController::class, 'index'])->name('graph0');
+Route::get('/graph0/{id}', [GraphDeviceController::class, 'scope']);
 Route::get('/graph1', [GraphSessionController::class, 'index'])->name('graph1');
+Route::get('/graph1/{id}', [GraphSessionController::class, 'scope']);
 
 Route::post('/logout', [LogoutController::class, 'store'])->name('logout');
 

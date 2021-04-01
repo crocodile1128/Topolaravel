@@ -8,22 +8,17 @@ class GraphDeviceController extends Controller
 {
     public function index()
     {
+        $hosts = $this->get_json();
+        return view('graph.index0', $this->get_mac_details($hosts));
+    }
+
+    public function get_json() {
         $json = file_get_contents('files/hosts.json');
         $hosts = json_decode($json, true);
+        return $hosts;
+    }
 
-//         "152.195.11.6" => array:11 [▼
-//     "MAC" => "10FEED3F8D22"
-//     "NIC Vender" => "TP-LINK TECHNOLOGIES CO.,LTD."
-//     "MAC Age" => "2012/7/25"
-//     "IP" => "152.195.11.6"
-//     "OS" => "Unknown"
-//     "OS Detail" => "Unknown"
-//     "Host Name" => "cs611.wpc.edgecastcdn.net, wu.wpc.apr-52dd2.edgecastdns.net, ctldl.windowsupdate.com"
-//     "Queried DNS" => []
-//     "Incoming Sessions" => array:1 [▶]
-//     "Outgoing Sessions" => []
-//     "Details" => array:1 [▶]
-//   ]
+    public function get_mac_details($hosts) {
         $devices = [];
         $venders = [];
         $ages = [];
@@ -36,6 +31,7 @@ class GraphDeviceController extends Controller
                     array_push($ages, $value["MAC Age"]);
                 }
         $device_conn = [];
+        $device_count = [];
         foreach($hosts as $key=>$value){
             if($key != "test")
                 for($i=0; $i < count($value['Incoming Sessions']); $i++){
@@ -56,20 +52,43 @@ class GraphDeviceController extends Controller
                         $dst_mac = $hosts[$dstip]["MAC"];
                         $connect0 = $src_mac . "_" . $dst_mac;
                         $connect1 = $dst_mac . "_" . $src_mac;
-                        if (!in_array($connect0, $device_conn) && !in_array($connect1, $device_conn))
+                        if (!in_array($connect0, $device_conn) && !in_array($connect1, $device_conn)) {
                             array_push($device_conn, $connect0);
+                            array_push($device_count, 0);
+                        }
+                        else if (in_array($connect0, $device_conn)){
+                            $device_count[array_search($connect0, $device_conn)]++;
+                        }
+                        else if (in_array($connect1, $device_conn)){
+                            $device_count[array_search($connect1, $device_conn)]++;
+                        }
                     }
                 }
         }
-
-
-        // dd($hosts["13.35.37.66"]["OS"]);
-        return view('graph.index0', array(
+        return array(
             'hosts' => $hosts,
             'devices' => $devices,
             'venders' => $venders,
             'ages' => $ages,
-            'device_conn' => $device_conn
+            'device_conn' => $device_conn,
+            'device_count' => $device_count
+        );
+    }
+
+    public function scope($hostid) {
+        $hosts = $this->get_json();
+        $id = (int)$hostid;
+
+        if ($id >= count($hosts)-1) return redirect('/graph0');
+        $keys = array_keys($hosts);
+        $host = $hosts[$keys[$id]];
+        //dd($host);
+
+        $datas = $this->get_mac_details($hosts);
+
+        return view('graph.scope', array(
+            'host' => $host,
+            'datas' => $datas
         ));
     }
 

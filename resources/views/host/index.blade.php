@@ -178,8 +178,8 @@
         var table = $('#data-table').DataTable();
         $('#data-table tbody').on('click', 'tr', function () {
             var data = table.row( this ).data();
-            alert( 'You clicked on '+data[0]+'\'s row' );
-    } );
+            detailDisplay(data);
+        });
     } );
 </script>
 @endsection

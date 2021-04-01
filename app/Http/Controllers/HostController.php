@@ -46,6 +46,7 @@ class HostController extends Controller
         $hosts = json_decode($json, true);
         return view('host.detail', array(
             'host' =>$hosts[$host],
+            'hosts' => $hosts
         ));
     }
 }

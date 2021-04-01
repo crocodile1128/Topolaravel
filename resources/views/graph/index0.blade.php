@@ -6,9 +6,19 @@
             Graph
         </div>
     </div> --}}
+
+    {{-- <div class="flex flex-end shadow p-4">
+        <form class="shadow p-4 flex flex-end" action="">
+            <input class="w-full rounded p-2" type="text" placeholder="Search...">
+            <button class="bg-blue hover:bg-red-lighter rounded text-white p-2 pl-4 pr-4">
+                <p class="font-semibold text-xl">Search</p>
+            </button>
+        </form>
+    </div> --}}
+
     {{-- plot network --}}
     <link rel="stylesheet" href="{{ asset("css/mynetwork.css") }}">
-    <div class="flex justify-center">
+    <div class="flex justify-center p-4">
         <div id="mynetwork">
             <div class="vis-network" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; width: 100%; height: 100%;">
                 <canvas style="position: relative; touch-action: none; user-select: none; width: 100%; height: 100%; top: 0px; left: 0px;" >
@@ -16,11 +26,13 @@
             </div>
         </div>
     </div>
+
 @endsection
 @section('extend-js')
     <script type="text/javascript" src="js/vis-network.min.js"></script>
     <script>
         // create an array with nodes
+
         var nodes = new vis.DataSet([
             <?php
                 $i = 0;
@@ -32,9 +44,9 @@
                     if($key != "test"){
                         //dd($value);
                         $label = $value["IP"] . '\n' . $value["Host Name"];
-                        $title = "I have a popup!";
+                        $title = $value["IP"] . '\nIncoming Sessions: ' . count($value["Incoming Sessions"]) . '\nOutgoing Sessions: ' . count($value["Outgoing Sessions"]);
                         if ($value["OS"] == "Windows")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "img/windows.jpg", title: "' . $title . '" },');
+                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
                         else if ($value["OS"] == "Linux")
                             print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "img/linux.jpg", title: "' . $title . '" },');
                         else if ($value["OS"] == "Android")
@@ -52,7 +64,8 @@
                     // $result = implode(":", str_split($string, 2));
                     // dd($result);
                     $label = implode(":", str_split($devices[$j], 2)) . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "img/switch.png" },');
+                    $title = implode(":", str_split($devices[$j], 2)) . '\n' . $venders[$j] . '\n' . $ages[$j];
+                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/switch.png", size: 40, borderWidth: 1, title: "' . $title . '", color:{border: "gray", highlight: { border: "red"},}},');
                     // if (!is_string($device))
                     array_push($host, $devices[$j] . "_");
                     $i++;
@@ -66,20 +79,21 @@
                 foreach($hosts as $key=>$host) {
                     if($key!="test"){
                         for($i=0; $i < count($devices); $i++){
-                            $title = "test";
+                            $title = "";
                             $thick = 2;
                             if ($host["MAC"] == $devices[$i]) {
-                                print ("{ from: " . $host2id[$devices[$i] . "_"] . ", to:" . $host2id[$host["IP"]] . ", value: " . $thick . ", title: '" . $title . "'},");
+                                print ("{ from: " . $host2id[$devices[$i] . "_"] . ", to:" . $host2id[$host["IP"]] . ", value: " . $thick . ", title: '" . $title . "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
                                 break;
                             }
                         }
                     }
                 }
 
-                $thick = 3;
-                foreach($device_conn as $conn) {
-                    $devices = explode('_', $conn);
-                    print ("{ from: " . $host2id[$devices[0] . "_"] . ", to:" . $host2id[$devices[1]. "_"] . ", value: " . $thick . ", title: '" . $title . "'},");
+                for($i=0; $i<count($device_conn); $i++) {
+                    $thick = $device_count[$i];
+                    $title = $device_count[$i];
+                    $devices = explode('_', $device_conn[$i]);
+                    print ("{ from: " . $host2id[$devices[0] . "_"] . ", to:" . $host2id[$devices[1]. "_"] . ", value: " . $thick . ", title: '" . $title .  "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
                 }
             ?>
         ]);
@@ -93,10 +107,16 @@
 
         var options = {
           nodes: {
-            borderWidth: 4,
-            size: 30,
+            borderWidth: 2,
+            borderWidthSelected: 8,
+            size: 24,
             color: {
-                border: "#222222"
+              border: "black",
+              background: "white",
+              highlight: {
+                border: "purple",
+                background: "white",
+              },
             },
             shape: "dot",
             scaling: {
@@ -107,6 +127,9 @@
               size: 12,
               face: "Tahoma",
             },
+            shapeProperties: {
+                useBorderWithImage: true,
+            },
           },
           edges: {
             color: { inherit: true },
@@ -116,7 +139,7 @@
             },
           },
           interaction: {
-            hideEdgesOnDrag: true,
+            hideEdgesOnDrag: false,
             tooltipDelay: 200,
           },
 
@@ -130,5 +153,8 @@
           },
         };
         var network = new vis.Network(container, data, options);
+        network.on("doubleClick", function (params) {
+            window.location.href = '/graph0/' + params['nodes'];
+        });
     </script>
 @endsection
