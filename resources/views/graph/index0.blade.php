@@ -129,8 +129,10 @@
                 {
                     if($key != "test"){
                         //dd($value);
-                        $label = implode('\n', $labels);
-                        $title = impolde('\n', $titles)
+                        $label = '';
+                        foreach($labels as $l) $label .= $l . ':' . $value[$l] . '\n';
+                        $title = '';
+                        foreach($titles as $t) $title .= $t . ':' . $value[$t] . '\n';
                         if ($value["OS"] == "Windows")
                             print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
                         else if ($value["OS"] == "Linux")

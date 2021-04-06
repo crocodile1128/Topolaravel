@@ -11,7 +11,8 @@ class GraphDeviceController extends Controller
         $hosts = $this->get_json();
         $datas = $this->get_mac_details($hosts);
         $labels = ["IP", "Host Name"];
-        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
+        $titles = ["IP", "OS"];
+        //dd($datas);
         return view('graph.index0', array(
             'datas' => $datas,
             'labels' => $labels,
