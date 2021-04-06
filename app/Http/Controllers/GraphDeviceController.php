@@ -9,7 +9,14 @@ class GraphDeviceController extends Controller
     public function index()
     {
         $hosts = $this->get_json();
-        return view('graph.index0', $this->get_mac_details($hosts));
+        $datas = $this->get_mac_details($hosts);
+        $labels = ["IP", "Host Name"];
+        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
+        return view('graph.index0', array(
+            'datas' => $datas,
+            'labels' => $labels,
+            'titles' => $titles,
+        ));
     }
 
     public function get_json() {
@@ -80,8 +87,10 @@ class GraphDeviceController extends Controller
     }
 
     public function detail_to_show(Request $request) {
+        $hosts = $this->get_json();
         dd($request);
     }
+
     public function scope($hostid) {
         $hosts = $this->get_json();
         $id = (int)$hostid;
@@ -93,9 +102,13 @@ class GraphDeviceController extends Controller
 
         $datas = $this->get_mac_details($hosts);
 
+        $labels = ["IP", "Host Name"];
+        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
         return view('graph.scope', array(
             'host' => $host,
-            'datas' => $datas
+            'datas' => $datas,
+            'labels' => $labels,
+            'titles' => $titles,
         ));
     }
 

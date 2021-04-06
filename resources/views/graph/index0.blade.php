@@ -115,6 +115,12 @@
 
         var nodes = new vis.DataSet([
             <?php
+                $hosts = $datas["hosts"];
+                $devices = $datas["devices"];
+                $venders = $datas["venders"];
+                $ages = $datas["ages"];
+                $device_conn = $datas["device_conn"];
+                $device_count = $datas["device_count"];
                 $i = 0;
                 $host2id = [];
                 $host = [];
@@ -123,8 +129,8 @@
                 {
                     if($key != "test"){
                         //dd($value);
-                        $label = $value["IP"] . '\n' . $value["Host Name"];
-                        $title = $value["IP"] . '\nIncoming Sessions: ' . count($value["Incoming Sessions"]) . '\nOutgoing Sessions: ' . count($value["Outgoing Sessions"]);
+                        $label = implode('\n', $labels);
+                        $title = impolde('\n', $titles)
                         if ($value["OS"] == "Windows")
                             print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
                         else if ($value["OS"] == "Linux")
