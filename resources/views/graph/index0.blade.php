@@ -17,8 +17,19 @@
     </div> --}}
 
     {{-- plot network --}}
-    <link rel="stylesheet" href="{{ asset("css/mynetwork.css") }}">
-    <div class="flex justify-center p-4">
+    {{-- <link rel="stylesheet" href="{{ asset("css/mynetwork.css") }}"> --}}
+    <style>
+        body {
+            font: 10pt arial;
+        }
+        #mynetwork {
+            height: 800px;
+            border: 1px solid lightgray;
+        }
+    </style>
+<div class="flex p-6">
+    <div class="shadow overflow-hidden w-2/3 sm:rounded-lg p-4 bg-gray-100">
+    {{-- <div class="flex justify-center p-4"> --}}
         <div id="mynetwork">
             <div class="vis-network" style="position: relative; overflow: hidden; touch-action: pan-y; user-select: none; width: 100%; height: 100%;">
                 <canvas style="position: relative; touch-action: none; user-select: none; width: 100%; height: 100%; top: 0px; left: 0px;" >
@@ -26,7 +37,76 @@
             </div>
         </div>
     </div>
+    <div class="bg-white shadow overflow-hidden w-1/3 sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <form action="{{ route("search0") }}" method="post">
+                @csrf
+                <div class="p-8">
+                    <div class="flex rounded-lg bg-white shadow p-4">
+                        <input class="w-full py-4 px-6 text-gray-700 leading-tight focus:outline-none" id="search" name="search" type="text" placeholder="Ip/Mac/Domain/Os...">
+                        <button type="submit" class="bg-green-500 hover:bg-green-400 rounded-lg text-white p-2 pl-4 pr-4">
+                            <p class="font-semibold text-xs">Search</p>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <form action="{{ route("detail0") }}" method="post">
+                @csrf
+                <div class="block">
+                    <span class="text-gray-700">Details to show</span>
+                    <div class="mt-2">
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="IP">
+                                <span class="ml-2">IP Address</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="MAC">
+                                <span class="ml-2">MAC Address</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="NIC Vender">
+                                <span class="ml-2">NIC Vender</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="MAC Age">
+                                <span class="ml-2">MAC Age</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="OS">
+                                <span class="ml-2">Operating System</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="Host Name">
+                                <span class="ml-2">Host Name</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="Details">
+                                <span class="ml-2">Other Details</span>
+                            </label>
+                        </div>
 
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-400 rounded-lg text-white p-2 pl-4 pr-4">
+                            <p class="font-semibold text-xs">Apply</p>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 @section('extend-js')
     <script type="text/javascript" src="js/vis-network.min.js"></script>

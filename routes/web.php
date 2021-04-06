@@ -31,6 +31,8 @@ Route::get('/detail/{host}', [HostController::class, 'detail'])->name('detail');
 
 Route::get('/graph0', [GraphDeviceController::class, 'index'])->name('graph0');
 Route::get('/graph0/{id}', [GraphDeviceController::class, 'scope']);
+Route::post('/graph0/search', [GraphDeviceController::class, 'search'])->name('search0');
+Route::post('/detail', [GraphDeviceController::class, 'detail_to_show'])->name('detail0');
 Route::get('/graph1', [GraphSessionController::class, 'index'])->name('graph1');
 Route::get('/graph1/{id}', [GraphSessionController::class, 'scope']);
 

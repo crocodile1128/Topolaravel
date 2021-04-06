@@ -75,6 +75,13 @@ class GraphDeviceController extends Controller
         );
     }
 
+    public function search(Request $request) {
+        dd($request->search);
+    }
+
+    public function detail_to_show(Request $request) {
+        dd($request);
+    }
     public function scope($hostid) {
         $hosts = $this->get_json();
         $id = (int)$hostid;
