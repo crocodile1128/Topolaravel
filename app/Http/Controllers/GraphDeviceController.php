@@ -10,8 +10,8 @@ class GraphDeviceController extends Controller
     {
         $hosts = $this->get_json();
         $datas = $this->get_mac_details($hosts);
-        $labels = ["IP", "Host Name"];
-        $titles = ["IP", "OS"];
+        $labels = ["IP"];
+        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
         //dd($datas);
         return view('graph.index0', array(
             'datas' => $datas,
@@ -82,14 +82,35 @@ class GraphDeviceController extends Controller
             'device_count' => $device_count
         );
     }
-
+//     "3.209.45.230" => array:11 [▼
+//     "MAC" => "AC202EF945C2"
+//     "NIC Vender" => "Hitron Technologies. Inc"
+//     "MAC Age" => "1/4/2017"
+//     "IP" => "3.209.45.230"
+//     "OS" => "Linux"
+//     "OS Detail" => "Linux - Redhat 7.5 (50.00%) Linux - Linux 3.10 (50.00%) "
+//     "Host Name" => "expressapisv2.net, www.expressapisv2.net"
+//     "Queried DNS" => []
+//     "Incoming Sessions" => array:4 [ …4]
+//     "Outgoing Sessions" => []
+//     "Details" => array:3 [ …3]
+//   ]
     public function search(Request $request) {
         dd($request->search);
     }
 
     public function detail_to_show(Request $request) {
         $hosts = $this->get_json();
-        dd($request);
+        $datas = $this->get_mac_details($hosts);
+
+        $labels = $request->select_item;
+        $titles = $request->select_item;
+        //dd($datas);
+        return view('graph.index0', array(
+            'datas' => $datas,
+            'labels' => $labels,
+            'titles' => $titles,
+        ));
     }
 
     public function scope($hostid) {
@@ -103,11 +124,85 @@ class GraphDeviceController extends Controller
 
         $datas = $this->get_mac_details($hosts);
 
+        // sessions
+        $conn = [];
+        $count = [];
+        $srcips = [];
+        $dstips = [];
+        for($i=0; $i < count($host['Incoming Sessions']); $i++){
+            if ($host['Incoming Sessions'][$i] != null) {
+                $tmp = $host['Incoming Sessions'][$i];
+                $str_sec = explode(", ", $tmp);
+                /*array:4 [▼
+                    0 => "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
+                    1 => "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
+                    2 => "Session start: 2020-06-02 09:30:38 UTC"
+                    3 => "Session end: 2020-06-02 09:33:07 UTC"
+                    ] */
+                // Srcip  "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
+                $srcip = explode(" ", $str_sec[0])[1];
+                // Dstip  "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
+                $dstip = explode(" ", $str_sec[1])[1];
+
+                array_push($srcips, $srcip);
+                array_push($dstips, $dstip);
+                $conn0 = $srcip.'_'.$dstip;
+                $conn1 = $dstip.'_'.$srcip;
+                if (!in_array($conn0, $conn) && !in_array($conn1, $conn)) {
+                    array_push($conn, $conn0);
+                    array_push($count, 1);
+                }
+                else if (in_array($conn0, $conn)) {
+                    $count[array_search($conn0, $conn)]++;
+                }
+                else if (in_array($conn1, $conn)) {
+                    $count[array_search($conn1, $conn)]++;
+                }
+            }
+        }
+        for($i=0; $i < count($host['Outgoing Sessions']); $i++){
+            if ($host['Outgoing Sessions'][$i] != null) {
+                $tmp = $host['Outgoing Sessions'][$i];
+                $str_sec = explode(", ", $tmp);
+                // Srcip  "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
+                $srcip = explode(" ", $str_sec[0])[1];
+                // Dstip  "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
+                $dstip = explode(" ", $str_sec[1])[1];
+
+                array_push($srcips, $srcip);
+                array_push($dstips, $dstip);
+
+                $conn0 = $srcip.'_'.$dstip;
+                $conn1 = $dstip.'_'.$srcip;
+                if (!in_array($conn0, $conn) && !in_array($conn1, $conn)) {
+                    array_push($conn, $conn0);
+                    array_push($count, 1);
+                }
+                else if (in_array($conn0, $conn)) {
+                    $count[array_search($conn0, $conn)]++;
+                }
+                else if (in_array($conn1, $conn)) {
+                    $count[array_search($conn1, $conn)]++;
+                }
+            }
+        }
+        // get hosts to plot
+        $hosts_plot = [];
+        for($i=0; $i<count($keys)-1; $i++) {
+            if (in_array($keys[$i], $srcips))
+                $hosts_plot[$i] = $hosts[$keys[$i]];
+            else if (in_array($keys[$i], $dstips))
+                $hosts_plot[$i] = $hosts[$keys[$i]];
+        }
         $labels = ["IP", "Host Name"];
         $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
+
         return view('graph.scope', array(
+            'id' => $hostid,
             'host' => $host,
-            'datas' => $datas,
+            'hosts' => $hosts_plot,
+            'conn' => $conn,
+            'count' => $count,
             'labels' => $labels,
             'titles' => $titles,
         ));

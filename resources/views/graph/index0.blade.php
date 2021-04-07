@@ -1,21 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- <div class="flex justify-center p-6">
-        <div class="w-6/12 bg-white p-6 rounded-lg">
-            Graph
-        </div>
-    </div> --}}
-
-    {{-- <div class="flex flex-end shadow p-4">
-        <form class="shadow p-4 flex flex-end" action="">
-            <input class="w-full rounded p-2" type="text" placeholder="Search...">
-            <button class="bg-blue hover:bg-red-lighter rounded text-white p-2 pl-4 pr-4">
-                <p class="font-semibold text-xl">Search</p>
-            </button>
-        </form>
-    </div> --}}
-
     {{-- plot network --}}
     {{-- <link rel="stylesheet" href="{{ asset("css/mynetwork.css") }}"> --}}
     <style>
@@ -53,7 +38,7 @@
             <form action="{{ route("detail0") }}" method="post">
                 @csrf
                 <div class="block">
-                    <span class="text-gray-700">Details to show</span>
+                    <span style="font-weight:bold" class="text-gray-700">Details to show</span>
                     <div class="mt-2">
                         <div>
                             <label class="inline-flex items-center">
@@ -87,14 +72,32 @@
                         </div>
                         <div>
                             <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="OS Detail">
+                                <span class="ml-2">OS Details</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
                                 <input type="checkbox" name="select_item[]" value="Host Name">
                                 <span class="ml-2">Host Name</span>
                             </label>
                         </div>
                         <div>
                             <label class="inline-flex items-center">
-                                <input type="checkbox" name="select_item[]" value="Details">
-                                <span class="ml-2">Other Details</span>
+                                <input type="checkbox" name="select_item[]" value="Open Tcp Ports">
+                                <span class="ml-2">Open Tcp Ports</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="Incoming Sessions">
+                                <span class="ml-2">Incoming Session Count</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="Outgoing Sessions">
+                                <span class="ml-2">Outgoing Session Count</span>
                             </label>
                         </div>
 
@@ -125,22 +128,37 @@
                 $host2id = [];
                 $host = [];
                 $id = [];
+                //dd($hosts);
                 foreach($hosts as $key=>$value)
                 {
                     if($key != "test"){
                         //dd($value);
                         $label = '';
-                        foreach($labels as $l) $label .= $l . ':' . $value[$l] . '\n';
+                        foreach($labels as $l) {
+                            if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                                $label .= $l . ':' . count($value[$l]) . '\n';
+                            else {
+                                $label .= $l . ':' . $value[$l] . '\n';
+                            }
+                        }
+
                         $title = '';
-                        foreach($titles as $t) $title .= $t . ':' . $value[$t] . '\n';
+                        foreach($titles as $l) {
+                            if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                                $title .= $l . ':' . count($value[$l]) . '\n';
+                            else {
+                                $title .= $l . ':' . $value[$l] . '\n';
+                            }
+                        }
+                        print ('{ id: ' . $i . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
                         if ($value["OS"] == "Windows")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
+                            print ('image: "img/windows.jpg"},');
                         else if ($value["OS"] == "Linux")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "img/linux.jpg", title: "' . $title . '" },');
+                            print ('image: "img/linux.jpg" },');
                         else if ($value["OS"] == "Android")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "img/android.jpg", title: "' . $title . '" },');
+                            print ('image: "img/android.jpg" },');
                         else
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "img/computer.jpg", title: "' . $title . '" },');
+                            print ('image: "img/computer.jpg" },');
 
                         array_push($host, $value["IP"]);
                         $i++;
@@ -151,9 +169,13 @@
                     // $string = "002590733014";
                     // $result = implode(":", str_split($string, 2));
                     // dd($result);
-                    $label = implode(":", str_split($devices[$j], 2)) . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    $title = implode(":", str_split($devices[$j], 2)) . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/switch.png", size: 40, borderWidth: 1, title: "' . $title . '", color:{border: "gray", highlight: { border: "red"},}},');
+                    if ($devices[$j] != "Unknown MAC")
+                        $mac = implode(":", str_split($devices[$j], 2));
+                    else
+                        $mac = $devices[$j];
+                    $label = $mac . '\n' . $venders[$j] . '\n' . $ages[$j];
+                    $title = $mac . '\n' . $venders[$j] . '\n' . $ages[$j];
+                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/network_socket.png", title: "' . $title . '", color:{border: "gray", highlight: { border: "gray"},}},');
                     // if (!is_string($device))
                     array_push($host, $devices[$j] . "_");
                     $i++;
@@ -222,22 +244,22 @@
           edges: {
             color: { inherit: true },
             width: 0.15,
-            smooth: {
-              type: "continuous",
-            },
+            smooth: false
           },
           interaction: {
-            hideEdgesOnDrag: false,
+            hideEdgesOnDrag: true,
             tooltipDelay: 200,
           },
 
           physics: {
             stabilization: false,
-            barnesHut: {
-              gravitationalConstant: -8000,
-              springConstant: 0.0001,
-              springLength: 1,
-            },
+
+            solver: "forceAtlas2Based",
+            // barnesHut: {
+            //   gravitationalConstant: -8000,
+            //   springConstant: 0.0001,
+            //   springLength: 1,
+            // },
           },
         };
         var network = new vis.Network(container, data, options);

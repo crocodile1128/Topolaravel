@@ -103,6 +103,14 @@
                 </div>
                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                     <dt class="text-sm font-medium text-gray-500">
+                        Open Tcp Ports
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ $host["Open Tcp Ports"] }}
+                    </dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
                         Other Details
                     </dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -133,72 +141,44 @@
 
         var nodes = new vis.DataSet([
             <?php
-                $hosts = $datas["hosts"];
-                $devices = $datas["devices"];
-                $venders = $datas["venders"];
-                $ages = $datas["ages"];
-                $device_conn = $datas["device_conn"];
-                $device_count = $datas["device_count"];
-                $i = 0;
-                $host2id = [];
-                $host = [];
-                $id = [];
-                //dd($datas);
-                foreach($hosts as $key=>$value)
-                {
-                    if($key != "test"){
-                        //dd($value);
-                        $label = $value["IP"] . '\n' . $value["Host Name"];
-                        $title = $value["IP"] . '\nIncoming Sessions: ' . count($value["Incoming Sessions"]) . '\nOutgoing Sessions: ' . count($value["Outgoing Sessions"]);
-                        if ($value["OS"] == "Windows")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "/img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
-                        else if ($value["OS"] == "Linux")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "/img/linux.jpg", title: "' . $title . '" },');
-                        else if ($value["OS"] == "Android")
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "/img/android.jpg", title: "' . $title . '" },');
+                $collect = [];
+                foreach($hosts as $key=>$value) {
+                    $label = '';
+                    foreach($labels as $l) {
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                            $label .= $l . ':' . count($value[$l]) . '\n';
                         else
-                            print ('{ id: ' . $i . ', label:"' . $label . '", shape: "circularImage", image: "/img/computer.jpg", title: "' . $title . '" },');
-
-                        array_push($host, $value["IP"]);
-                        $i++;
+                            $label .= $l . ':' . $value[$l] . '\n';
                     }
+
+                    $title = '';
+                    foreach($titles as $l) {
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                            $title .= $l . ':' . count($value[$l]) . '\n';
+                        else
+                            $title .= $l . ':' . $value[$l] . '\n';
+                    }
+
+                    if ($value["OS"] == "Windows")
+                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "/img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
+                    else if ($value["OS"] == "Linux")
+                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", image: "/img/linux.jpg", title: "' . $title . '" },');
+                    else if ($value["OS"] == "Android")
+                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", image: "/img/android.jpg", title: "' . $title . '" },');
+                    else
+                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", image: "/img/computer.jpg", title: "' . $title . '" },');
+                    $collect[$value["IP"]] = $key;
                 }
-                for($j=0; $j<count($devices); $j++)
-                {
-                    // $string = "002590733014";
-                    // $result = implode(":", str_split($string, 2));
-                    // dd($result);
-                    $label = implode(":", str_split($devices[$j], 2)) . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    $title = implode(":", str_split($devices[$j], 2)) . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "/img/switch.png", size: 40, borderWidth: 1, title: "' . $title . '", color:{border: "gray", highlight: { border: "red"},}},');
-                    // if (!is_string($device))
-                    array_push($host, $devices[$j] . "_");
-                    $i++;
-                }
-                $host2id = array_flip($host);
             ?>
         ]);
         // create an array with edges
         var edges = new vis.DataSet([
             <?php
-                foreach($hosts as $key=>$host) {
-                    if($key!="test"){
-                        for($i=0; $i < count($devices); $i++){
-                            $title = "";
-                            $thick = 2;
-                            if ($host["MAC"] == $devices[$i]) {
-                                print ("{ from: " . $host2id[$devices[$i] . "_"] . ", to:" . $host2id[$host["IP"]] . ", value: " . $thick . ", title: '" . $title . "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                for($i=0; $i<count($device_conn); $i++) {
-                    $thick = $device_count[$i];
-                    $title = $device_count[$i];
-                    $devices = explode('_', $device_conn[$i]);
-                    print ("{ from: " . $host2id[$devices[0] . "_"] . ", to:" . $host2id[$devices[1]. "_"] . ", value: " . $thick . ", title: '" . $title .  "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
+                for($i=0; $i < count($conn); $i++){
+                    $ips = explode('_', $conn[$i]);
+                    $thick = $count[$i];
+                    $title = $count[$i] . " Sessions";
+                    print ("{ from: " . $collect[$ips[0]] . ", to:" . $collect[$ips[1]] . ", value: " . $thick . ", title: '" . $title .  "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
                 }
             ?>
         ]);
@@ -214,7 +194,7 @@
           nodes: {
             borderWidth: 2,
             borderWidthSelected: 8,
-            size: 24,
+            size: 16,
             color: {
               border: "black",
               background: "white",
@@ -239,17 +219,28 @@
           edges: {
             color: { inherit: true },
             width: 0.15,
-            smooth: {
-              type: "continuous",
-            },
+            smooth: false
           },
           interaction: {
-            hideEdgesOnDrag: false,
+            hideEdgesOnDrag: true,
             tooltipDelay: 200,
           },
-
+        //   physics: {
+        //     forceAtlas2Based: {
+        //       gravitationalConstant: -26,
+        //       centralGravity: 0.005,
+        //       springLength: 230,
+        //       springConstant: 0.18,
+        //     },
+        //     maxVelocity: 146,
+        //     solver: "forceAtlas2Based",
+        //     timestep: 0.35,
+        //     stabilization: { iterations: 150 },
+        //   },
           physics: {
             stabilization: false,
+            maxVelocity: 100,
+            solver: "forceAtlas2Based",
             barnesHut: {
               gravitationalConstant: -8000,
               springConstant: 0.0001,
