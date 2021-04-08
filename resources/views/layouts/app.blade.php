@@ -24,11 +24,11 @@
                 <a href="{{ route('host') }}" class="p-3">Host</a>
             </li>
             <li>
-                <a href="{{ route('graph0') }}" class="p-3">Graph - MAC to IP</a>
+                <a href="{{ route('graph0') }}" class="p-3">Graph</a>
             </li>
-            <li>
+            {{-- <li>
                 <a href="{{ route('graph1') }}" class="p-3">Graph - By Session</a>
-            </li>
+            </li> --}}
         </ul>
         {{-- <ul class="flex items-center">
             @if (auth()->user())

@@ -12,7 +12,7 @@ class GraphDeviceController extends Controller
         $datas = $this->get_mac_details($hosts);
         $labels = ["IP"];
         $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
-        //dd($datas);
+
         return view('graph.index0', array(
             'datas' => $datas,
             'labels' => $labels,

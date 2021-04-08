@@ -157,8 +157,19 @@
                             print ('image: "img/linux.jpg" },');
                         else if ($value["OS"] == "Android")
                             print ('image: "img/android.jpg" },');
-                        else
-                            print ('image: "img/computer.jpg" },');
+                        else {
+                            if ($value["Open Tcp Ports"] == "80" || $value["Open Tcp Ports"] == "443")
+                                print ('image: "img/webserver.png" },');
+                            else if ($value["Open Tcp Ports"] == "21")
+                                print ('image: "img/ftp.png" },');
+                            else if ($value["Open Tcp Ports"] == "25")
+                                print ('image: "img/mail.png" },');
+                            else if ($value["Open Tcp Ports"] == "53")
+                                print ('image: "img/dns.png" },');
+                            else
+                                print ('image: "img/computer.jpg"},');
+                        }
+
 
                         array_push($host, $value["IP"]);
                         $i++;

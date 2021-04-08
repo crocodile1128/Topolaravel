@@ -33,10 +33,9 @@ class HostController extends Controller
 
     public function show()
     {
-
         $json = file_get_contents('files/hosts.json');
         $hosts = json_decode($json, true);
-        // dd($hosts);
+        //dd($hosts);
         return view('host.index', array('hosts' => $hosts));
     }
 
