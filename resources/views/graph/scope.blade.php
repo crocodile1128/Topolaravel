@@ -160,31 +160,51 @@
         var nodes = new vis.DataSet([
             <?php
                 $collect = [];
-                foreach($hosts as $key=>$value) {
+                foreach($hosts as $key=>$value)
+                {
+                    //dd($value);
                     $label = '';
                     foreach($labels as $l) {
                         if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
                             $label .= $l . ':' . count($value[$l]) . '\n';
-                        else
+                        else {
                             $label .= $l . ':' . $value[$l] . '\n';
+                        }
                     }
 
                     $title = '';
                     foreach($titles as $l) {
                         if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
                             $title .= $l . ':' . count($value[$l]) . '\n';
-                        else
+                        else {
                             $title .= $l . ':' . $value[$l] . '\n';
+                        }
                     }
+                    print ('{ id: ' . $key . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
 
-                    if ($value["OS"] == "Windows")
-                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", borderWidth: 4, image: "/img/windows.jpg", title: "' . $title . '", color:{border: "red", highlight: { border: "red"},}},');
-                    else if ($value["OS"] == "Linux")
-                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", image: "/img/linux.jpg", title: "' . $title . '" },');
-                    else if ($value["OS"] == "Android")
-                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", image: "/img/android.jpg", title: "' . $title . '" },');
+                    if ($value["Icon"] != "null")
+                        print ('image: "' . str_replace("\\", "\/" , $value["Icon"]) . '"},');
                     else
-                        print ('{ id: ' . $key . ', label:"' . $label . '", shape: "circularImage", image: "/img/computer.jpg", title: "' . $title . '" },');
+                        if ($value["OS"] == "Windows")
+                            print ('image: "/img/windows.jpg"},');
+                        else if ($value["OS"] == "Linux")
+                            print ('image: "/img/linux.jpg" },');
+                        else if ($value["OS"] == "Android")
+                            print ('image: "/img/android.jpg" },');
+                        else {
+                            if ($value["Open Tcp Ports"] == "80" || $value["Open Tcp Ports"] == "443")
+                                print ('image: "/img/webserver.png" },');
+                            else if ($value["Open Tcp Ports"] == "21")
+                                print ('image: "/img/ftp.png" },');
+                            else if ($value["Open Tcp Ports"] == "25")
+                                print ('image: "/img/mail.png" },');
+                            else if ($value["Open Tcp Ports"] == "53")
+                                print ('image: "/img/dns.png" },');
+                            else
+                                print ('image: "/img/computer.jpg"},');
+                        }
+
+
                     $collect[$value["IP"]] = $key;
                 }
             ?>

@@ -1119,6 +1119,7 @@ namespace NetworkMiner {
                 string outSessions;
                 string details;
                 string queriedDNS;
+                string faviconKey;
 
                 // Write first row
                 //strToWrite = "MAC\tHOST\tOS\tOS Details\tHost Name\tQueried DNS\tSessions In\tSessions Out\tDetails\n";
@@ -1141,6 +1142,7 @@ namespace NetworkMiner {
                     outSessions = null;
                     details = null;
                     queriedDNS = null;
+                    faviconKey = null;
 
                     NetworkHostTreeNode treeNode = new NetworkHostTreeNode(networkHost, this.ipLocator, this.hostDetailsGenerator, this.GetSiblings);
 
@@ -1173,6 +1175,13 @@ namespace NetworkMiner {
                     }
                     else
                         macAddress = "\"MAC\":\"Unknown MAC\",\"NIC Vender\":\"Unknown\",\"MAC Age\":\"Unknown\",";
+                    // Favicon 
+                    if (networkHost.FaviconKey != null)
+                    {
+                        faviconKey = "\"Icon\":\"" + networkHost.FaviconKey.Replace("\\", "\\\\") + "\",";
+                    }
+                    else
+                        faviconKey = "\"Icon\":\"null\",";
                     // IP Address
                     if (networkHost.IPAddress != null) ipAddress = "\"IP\":\"" + networkHost.IPAddress.ToString() + "\",";
                     else ipAddress = "\"IP\":\"Unknown IP\",";
@@ -1278,13 +1287,18 @@ namespace NetworkMiner {
                         details = "\"Details\":[";
                         int i;
                         for (i = 0; i < networkHost.HostDetailCollection.Count - 1; i++)
-                            details += "{\"" + networkHost.HostDetailCollection.Keys[i].Replace("\"", "") + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}" + ",";
-                        details += "{\"" + networkHost.HostDetailCollection.Keys[i] + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}]";
+                        {
+                            
+                            if (networkHost.HostDetailCollection.Keys[i] != "favicon")
+                                details += "{\"" + networkHost.HostDetailCollection.Keys[i].Replace("\"", "") + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}" + ",";
+                        }
+                        if (networkHost.HostDetailCollection.Keys[i] != "favicon")
+                            details += "{\"" + networkHost.HostDetailCollection.Keys[i] + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}]";
                     }
                     else
                         details = "\"Details\":[]";
 
-                    strToWrite = "\"" + networkHost.IPAddress.ToString() + "\":{" + macAddress + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "},\n";
+                    strToWrite = "\"" + networkHost.IPAddress.ToString() + "\":{" + macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "},\n";
                     numBytesToWrite = strToWrite.Length;
                     buf = Encoding.UTF8.GetBytes(strToWrite);
                     fsOut.Write(buf, 0, numBytesToWrite);

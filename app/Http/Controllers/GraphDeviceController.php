@@ -23,6 +23,13 @@ class GraphDeviceController extends Controller
     public function get_json() {
         $json = file_get_contents('files/hosts.json');
         $hosts = json_decode($json, true);
+        // remove test in the end of element
+        unset($hosts["test"]);
+        // set icon
+        foreach($hosts as $key=>$value) {
+            //dd($hosts[$key]["Icon"]);
+            $hosts[$key]["Icon"] = str_replace(public_path(), "", $hosts[$key]["Icon"]);
+        }
         return $hosts;
     }
 
@@ -73,6 +80,7 @@ class GraphDeviceController extends Controller
                     }
                 }
         }
+
         return array(
             'hosts' => $hosts,
             'devices' => $devices,
@@ -123,7 +131,6 @@ class GraphDeviceController extends Controller
         //dd($host);
 
         $datas = $this->get_mac_details($hosts);
-
         // sessions
         $conn = [];
         $count = [];
@@ -194,6 +201,11 @@ class GraphDeviceController extends Controller
             else if (in_array($keys[$i], $dstips))
                 $hosts_plot[$i] = $hosts[$keys[$i]];
         }
+        // set icon
+        foreach($hosts_plot as $key=>$value) {
+            $hosts_plot[$key]["Icon"] = str_replace(public_path(), "", $hosts_plot[$key]["Icon"]);
+        }
+        // set label
         $labels = ["IP", "Host Name"];
         $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
 

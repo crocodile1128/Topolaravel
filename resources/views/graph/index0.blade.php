@@ -131,26 +131,29 @@
                 //dd($hosts);
                 foreach($hosts as $key=>$value)
                 {
-                    if($key != "test"){
-                        //dd($value);
-                        $label = '';
-                        foreach($labels as $l) {
-                            if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
-                                $label .= $l . ':' . count($value[$l]) . '\n';
-                            else {
-                                $label .= $l . ':' . $value[$l] . '\n';
-                            }
+                    //dd($value);
+                    $label = '';
+                    foreach($labels as $l) {
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                            $label .= $l . ':' . count($value[$l]) . '\n';
+                        else {
+                            $label .= $l . ':' . $value[$l] . '\n';
                         }
+                    }
 
-                        $title = '';
-                        foreach($titles as $l) {
-                            if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
-                                $title .= $l . ':' . count($value[$l]) . '\n';
-                            else {
-                                $title .= $l . ':' . $value[$l] . '\n';
-                            }
+                    $title = '';
+                    foreach($titles as $l) {
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                            $title .= $l . ':' . count($value[$l]) . '\n';
+                        else {
+                            $title .= $l . ':' . $value[$l] . '\n';
                         }
-                        print ('{ id: ' . $i . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
+                    }
+                    print ('{ id: ' . $i . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
+
+                    if ($value["Icon"] != "null")
+                        print ('image: "' . str_replace("\\", "\/" , $value["Icon"]) . '"},');
+                    else
                         if ($value["OS"] == "Windows")
                             print ('image: "img/windows.jpg"},');
                         else if ($value["OS"] == "Linux")
@@ -170,10 +173,8 @@
                                 print ('image: "img/computer.jpg"},');
                         }
 
-
-                        array_push($host, $value["IP"]);
-                        $i++;
-                    }
+                    array_push($host, $value["IP"]);
+                    $i++;
                 }
                 for($j=0; $j<count($devices); $j++)
                 {
@@ -198,14 +199,13 @@
         var edges = new vis.DataSet([
             <?php
                 foreach($hosts as $key=>$host) {
-                    if($key!="test"){
-                        for($i=0; $i < count($devices); $i++){
-                            $title = "";
-                            $thick = 2;
-                            if ($host["MAC"] == $devices[$i]) {
-                                print ("{ from: " . $host2id[$devices[$i] . "_"] . ", to:" . $host2id[$host["IP"]] . ", value: " . $thick . ", title: '" . $title . "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
-                                break;
-                            }
+
+                    for($i=0; $i < count($devices); $i++){
+                        $title = "";
+                        $thick = 2;
+                        if ($host["MAC"] == $devices[$i]) {
+                            print ("{ from: " . $host2id[$devices[$i] . "_"] . ", to:" . $host2id[$host["IP"]] . ", value: " . $thick . ", title: '" . $title . "', color: { color: 'rgba(30,30,30,0.2)', highlight: 'purple' }},");
+                            break;
                         }
                     }
                 }
