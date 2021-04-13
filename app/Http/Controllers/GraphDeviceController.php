@@ -15,6 +15,7 @@ class GraphDeviceController extends Controller
 
         return view('graph.index0', array(
             'datas' => $datas,
+            'hosts' => $datas["hosts"],
             'labels' => $labels,
             'titles' => $titles,
         ));
@@ -104,7 +105,32 @@ class GraphDeviceController extends Controller
 //     "Details" => array:3 [ …3]
 //   ]
     public function search(Request $request) {
-        dd($request->search);
+        $hosts = $this->get_json();
+        $datas = $this->get_mac_details($hosts);
+        // to search
+        $tosearch = $request->search;
+        // set label
+        $labels = ["IP", "Host Name"];
+        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
+
+        $keys = array_keys($hosts);
+        // get hosts to plot
+        $hosts_plot = [];
+        // check IP
+        for($i=0;$i<count($hosts);$i++)
+            if (str_contains($hosts[$keys[$i]]["IP"], $tosearch)){
+                //dd($hosts[$keys[$i]]);
+                $hosts_plot[$i] = $hosts[$keys[$i]];
+            }
+
+        // check Mac
+        // check Domain
+        return view('graph.index0', array(
+            'datas' => $datas,
+            'hosts' => $hosts_plot,
+            'labels' => $labels,
+            'titles' => $titles,
+        ));
     }
 
     public function detail_to_show(Request $request) {
@@ -116,6 +142,7 @@ class GraphDeviceController extends Controller
         //dd($datas);
         return view('graph.index0', array(
             'datas' => $datas,
+            'hosts' => $datas["hosts"],
             'labels' => $labels,
             'titles' => $titles,
         ));

@@ -112,13 +112,12 @@
 </div>
 @endsection
 @section('extend-js')
-    <script type="text/javascript" src="js/vis-network.min.js"></script>
+    <script type="text/javascript" src="/js/vis-network.min.js"></script>
     <script>
         // create an array with nodes
 
         var nodes = new vis.DataSet([
             <?php
-                $hosts = $datas["hosts"];
                 $devices = $datas["devices"];
                 $venders = $datas["venders"];
                 $ages = $datas["ages"];
@@ -155,22 +154,22 @@
                         print ('image: "' . str_replace("\\", "\/" , $value["Icon"]) . '"},');
                     else
                         if ($value["OS"] == "Windows")
-                            print ('image: "img/windows.jpg"},');
+                            print ('image: "/img/windows.jpg"},');
                         else if ($value["OS"] == "Linux")
-                            print ('image: "img/linux.jpg" },');
+                            print ('image: "/img/linux.jpg" },');
                         else if ($value["OS"] == "Android")
-                            print ('image: "img/android.jpg" },');
+                            print ('image: "/img/android.jpg" },');
                         else {
                             if ($value["Open Tcp Ports"] == "80" || $value["Open Tcp Ports"] == "443")
-                                print ('image: "img/webserver.png" },');
+                                print ('image: "/img/webserver.png" },');
                             else if ($value["Open Tcp Ports"] == "21")
-                                print ('image: "img/ftp.png" },');
+                                print ('image: "/img/ftp.png" },');
                             else if ($value["Open Tcp Ports"] == "25")
-                                print ('image: "img/mail.png" },');
+                                print ('image: "/img/mail.png" },');
                             else if ($value["Open Tcp Ports"] == "53")
-                                print ('image: "img/dns.png" },');
+                                print ('image: "/img/dns.png" },');
                             else
-                                print ('image: "img/computer.jpg"},');
+                                print ('image: "/img/computer.jpg"},');
                         }
 
                     array_push($host, $value["IP"]);
@@ -187,7 +186,7 @@
                         $mac = $devices[$j];
                     $label = $mac . '\n' . $venders[$j] . '\n' . $ages[$j];
                     $title = $mac . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "img/network_socket.png", title: "' . $title . '", color:{border: "gray", highlight: { border: "gray"},}},');
+                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "/img/network_socket.png", title: "' . $title . '", color:{border: "gray", highlight: { border: "gray"},}},');
                     // if (!is_string($device))
                     array_push($host, $devices[$j] . "_");
                     $i++;
@@ -266,11 +265,11 @@
             stabilization: false,
 
             solver: "forceAtlas2Based",
-            // barnesHut: {
-            //   gravitationalConstant: -8000,
-            //   springConstant: 0.0001,
-            //   springLength: 1,
-            // },
+            barnesHut: {
+              gravitationalConstant: -8000,
+              springConstant: 0.0001,
+              springLength: 1,
+            },
           },
         };
         var network = new vis.Network(container, data, options);
