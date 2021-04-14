@@ -1101,6 +1101,8 @@ namespace NetworkMiner {
             List<TreeNode> tnList = new List<TreeNode>();
             if (outputJson == true)
             {
+                int hostCount = hosts.Count();
+                int key = 0;
                 // File Stream Object
                 string fOut = "hosts.json";
                 FileStream fsOut = new FileStream(fOut, FileMode.Create, FileAccess.Write);
@@ -1298,15 +1300,19 @@ namespace NetworkMiner {
                     else
                         details = "\"Details\":[]";
 
-                    strToWrite = "\"" + networkHost.IPAddress.ToString() + "\":{" + macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "},\n";
+                    if (key < hostCount - 1)
+                        strToWrite = "\"" + key.ToString() + "\":{" + macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "},\n";
+                    else
+                        strToWrite = "\"" + key.ToString() + "\":{" + macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "}}";
                     numBytesToWrite = strToWrite.Length;
                     buf = Encoding.UTF8.GetBytes(strToWrite);
                     fsOut.Write(buf, 0, numBytesToWrite);
+                    key++;
                 }
-                strToWrite = "\"test\":\"{}\"}";
-                numBytesToWrite = strToWrite.Length;
-                buf = Encoding.UTF8.GetBytes(strToWrite);
-                fsOut.Write(buf, 0, numBytesToWrite);
+                //strToWrite = "\"test\":\"{}\"}";
+                //numBytesToWrite = strToWrite.Length;
+                //buf = Encoding.UTF8.GetBytes(strToWrite);
+                //fsOut.Write(buf, 0, numBytesToWrite);
                 fsOut.Close();
 
             }

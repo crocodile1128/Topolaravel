@@ -24,7 +24,7 @@
     </div>
     <div class="bg-white shadow overflow-hidden w-1/3 sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6">
-            <form action="{{ route("search0") }}" method="post">
+            <form action="{{ route("search") }}" method="post">
                 @csrf
                 <div class="p-8">
                     <div class="flex rounded-lg bg-white shadow p-4">

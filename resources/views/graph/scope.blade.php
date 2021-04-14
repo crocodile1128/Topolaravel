@@ -204,7 +204,6 @@
                                 print ('image: "/img/computer.jpg"},');
                         }
 
-
                     $collect[$value["IP"]] = $key;
                 }
             ?>

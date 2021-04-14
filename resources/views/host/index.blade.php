@@ -6,7 +6,7 @@
             Host
         </div>
     </div> --}}
-    <div row class="flex justify-start p-6">
+    {{-- <div row class="flex justify-start p-6">
         <div class="px-4">
             <form method="post" action="{{ route('upload') }}" enctype="multipart/form-data">
                 @csrf
@@ -20,7 +20,7 @@
                 <input type="submit"  value="Show" class="p-6 bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded active:bg-green-700">
             </form>
         </div>
-    </div>
+    </div> --}}
     <div class="flex p-6">
         {{-- Tables --}}
         <div class="shadow overflow-hidden w-2/3 sm:rounded-lg p-4">
@@ -61,11 +61,12 @@
                 </tbody>
             </table>
         </div>
+
         {{-- Details --}}
         <div class="bg-white shadow overflow-hidden w-1/3 sm:rounded-lg">
             <div class="px-4 py-5 sm:px-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                {{-- {{ $host["IP"] }} --}}
+                {{ $host["IP"] }}
                 </h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">
                 Hosts details.
@@ -81,22 +82,22 @@
                             <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
-                                        <span class="ml-2 flex-1 w-0 truncate">
-                                            {{-- {{ $host["MAC"] }} --}}
+                                        <span id="mac_details" class="ml-2 flex-1 w-0 truncate">
+                                            {{ $host["MAC"] }}
                                         </span>
                                     </div>
                                 </li>
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
                                         <span class="ml-2 flex-1 w-0 truncate">
-                                            {{-- {{ $host["NIC Vender"] }} --}}
+                                            {{ $host["NIC Vender"] }}
                                         </span>
                                     </div>
                                 </li>
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
                                         <span class="ml-2 flex-1 w-0 truncate">
-                                            {{-- {{ $host["MAC Age"] }} --}}
+                                            {{ $host["MAC Age"] }}
                                         </span>
                                     </div>
                                 </li>
@@ -108,7 +109,7 @@
                             IP Address
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{-- {{ $host["IP"] }} --}}
+                            {{ $host["IP"] }}
                         </dd>
                     </div>
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -120,14 +121,14 @@
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
                                         <span class="ml-2 flex-1 w-0 truncate">
-                                            {{-- {{ $host["OS"] }} --}}
+                                            {{ $host["OS"] }}
                                         </span>
                                     </div>
                                 </li>
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
                                         <span class="ml-2 flex-1 w-0 truncate">
-                                            {{-- {{ $host["OS Detail"] }} --}}
+                                            {{ $host["OS Detail"] }}
                                         </span>
                                     </div>
                                 </li>
@@ -139,7 +140,7 @@
                             Host Name
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{-- {{ $host["Host Name"] }} --}}
+                            {{ $host["Host Name"] }}
                         </dd>
                     </div>
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -147,7 +148,7 @@
                             Open Tcp Ports
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{-- {{ $host["Open Tcp Ports"] }} --}}
+                            {{ $host["Open Tcp Ports"] }}
                         </dd>
                     </div>
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -156,15 +157,15 @@
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                             <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
-                                {{-- @foreach($host["Net Meta"] as $detail) --}}
+                                @foreach($host["Net Meta"] as $detail)
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
                                         <span class="ml-2 flex-1 w-0 truncate">
-                                            {{-- {{ $detail }} --}}
+                                            {{ $detail }}
                                         </span>
                                     </div>
                                 </li>
-                                {{-- @endforeach --}}
+                                @endforeach
                             </ul>
                         </dd>
                     </div>
@@ -174,7 +175,7 @@
                         </dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                             <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
-                                {{-- @foreach($host["Details"] as $detail)
+                                @foreach($host["Details"] as $detail)
                                     @foreach($detail as $key=>$value)
                                     <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                         <div class="w-0 flex-1 flex items-center">
@@ -184,7 +185,7 @@
                                         </div>
                                     </li>
                                     @endforeach
-                                @endforeach --}}
+                                @endforeach
                             </ul>
                         </dd>
                     </div>

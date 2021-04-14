@@ -9,7 +9,8 @@ class GraphSessionController extends Controller
 {
     public function index()
     {
-        $json = file_get_contents('files/hosts.json');
+        $json_path = env('JSON_PATH');
+        $json = file_get_contents($json_path);
         $hosts = json_decode($json, true);
 
         // $income

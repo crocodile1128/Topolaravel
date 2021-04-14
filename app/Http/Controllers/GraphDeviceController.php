@@ -22,12 +22,12 @@ class GraphDeviceController extends Controller
     }
 
     public function get_json() {
-        $json = file_get_contents('files/hosts.json');
+        $json_path = env('JSON_PATH');
+        $json = file_get_contents($json_path);
         $hosts = json_decode($json, true);
-        // remove test in the end of element
-        unset($hosts["test"]);
         // set icon
-        foreach($hosts as $key=>$value) {
+        foreach($hosts as $key=>$value)
+        {
             //dd($hosts[$key]["Icon"]);
             $hosts[$key]["Icon"] = str_replace(public_path(), "", $hosts[$key]["Icon"]);
         }
@@ -38,48 +38,53 @@ class GraphDeviceController extends Controller
         $devices = [];
         $venders = [];
         $ages = [];
-
+        $ips = [];
+        // Create MAC Array
         foreach($hosts as $key=>$value)
-            if ($key!="test")
-                if (!in_array($value["MAC"], $devices)) {
-                    array_push($devices, $value["MAC"]);
-                    array_push($venders, $value["NIC Vender"]);
-                    array_push($ages, $value["MAC Age"]);
-                }
+        {
+            $ips[$value["IP"]] = $key;
+            if (!in_array($value["MAC"], $devices)) {
+                array_push($devices, $value["MAC"]);
+                array_push($venders, $value["NIC Vender"]);
+                array_push($ages, $value["MAC Age"]);
+            }
+        }
+
         $device_conn = [];
         $device_count = [];
-        foreach($hosts as $key=>$value){
-            if($key != "test")
-                for($i=0; $i < count($value['Incoming Sessions']); $i++){
-                    if ($value['Incoming Sessions'][$i] != null) {
-                        $tmp = $value['Incoming Sessions'][$i];
-                        $str_sec = explode(", ", $tmp);
-                        /*array:4 [▼
-                            0 => "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
-                            1 => "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
-                            2 => "Session start: 2020-06-02 09:30:38 UTC"
-                            3 => "Session end: 2020-06-02 09:33:07 UTC"
-                            ] */
-                        // Srcip  "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
-                        $srcip = explode(" ", $str_sec[0])[1];
-                        $src_mac = $hosts[$srcip]["MAC"];
-                        // Dstip  "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
-                        $dstip = explode(" ", $str_sec[1])[1];
-                        $dst_mac = $hosts[$dstip]["MAC"];
-                        $connect0 = $src_mac . "_" . $dst_mac;
-                        $connect1 = $dst_mac . "_" . $src_mac;
-                        if (!in_array($connect0, $device_conn) && !in_array($connect1, $device_conn)) {
-                            array_push($device_conn, $connect0);
-                            array_push($device_count, 0);
-                        }
-                        else if (in_array($connect0, $device_conn)){
-                            $device_count[array_search($connect0, $device_conn)]++;
-                        }
-                        else if (in_array($connect1, $device_conn)){
-                            $device_count[array_search($connect1, $device_conn)]++;
-                        }
+        foreach($hosts as $key=>$value)
+        {
+            for($i=0; $i < count($value['Incoming Sessions']); $i++)
+            {
+                if ($value['Incoming Sessions'][$i] != null) {
+                    $tmp = $value['Incoming Sessions'][$i];
+                    $str_sec = explode(", ", $tmp);
+                    /*array:4 [▼
+                        0 => "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
+                        1 => "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
+                        2 => "Session start: 2020-06-02 09:30:38 UTC"
+                        3 => "Session end: 2020-06-02 09:33:07 UTC"
+                        ] */
+                    // Srcip  "Server: 13.35.37.66 TCP 443 (77 data bytes sent)"
+                    $srcip = explode(" ", $str_sec[0])[1];
+                    $src_mac = $hosts[$ips[$srcip]]["MAC"];
+                    // Dstip  "Client: 192.168.144.199 TCP 55426 (0 data bytes sent)"
+                    $dstip = explode(" ", $str_sec[1])[1];
+                    $dst_mac = $hosts[$ips[$dstip]]["MAC"];
+                    $connect0 = $src_mac . "_" . $dst_mac;
+                    $connect1 = $dst_mac . "_" . $src_mac;
+                    if (!in_array($connect0, $device_conn) && !in_array($connect1, $device_conn)) {
+                        array_push($device_conn, $connect0);
+                        array_push($device_count, 0);
+                    }
+                    else if (in_array($connect0, $device_conn)){
+                        $device_count[array_search($connect0, $device_conn)]++;
+                    }
+                    else if (in_array($connect1, $device_conn)){
+                        $device_count[array_search($connect1, $device_conn)]++;
                     }
                 }
+            }
         }
 
         return array(
@@ -91,19 +96,7 @@ class GraphDeviceController extends Controller
             'device_count' => $device_count
         );
     }
-//     "3.209.45.230" => array:11 [▼
-//     "MAC" => "AC202EF945C2"
-//     "NIC Vender" => "Hitron Technologies. Inc"
-//     "MAC Age" => "1/4/2017"
-//     "IP" => "3.209.45.230"
-//     "OS" => "Linux"
-//     "OS Detail" => "Linux - Redhat 7.5 (50.00%) Linux - Linux 3.10 (50.00%) "
-//     "Host Name" => "expressapisv2.net, www.expressapisv2.net"
-//     "Queried DNS" => []
-//     "Incoming Sessions" => array:4 [ …4]
-//     "Outgoing Sessions" => []
-//     "Details" => array:3 [ …3]
-//   ]
+
     public function search(Request $request) {
         $hosts = $this->get_json();
         $datas = $this->get_mac_details($hosts);
@@ -122,8 +115,13 @@ class GraphDeviceController extends Controller
                 //dd($hosts[$keys[$i]]);
                 $hosts_plot[$i] = $hosts[$keys[$i]];
             }
-
+        //dd($hosts_plot);
         // check Mac
+        for($i=0;$i<count($hosts);$i++)
+            if (str_contains($hosts[$keys[$i]]["MAC"], $tosearch)){
+                //dd($hosts[$keys[$i]]);
+                $hosts_plot[$i] = $hosts[$keys[$i]];
+            }
         // check Domain
         return view('graph.index0', array(
             'datas' => $datas,
@@ -152,10 +150,9 @@ class GraphDeviceController extends Controller
         $hosts = $this->get_json();
         $id = (int)$hostid;
 
-        if ($id >= count($hosts)-1) return redirect('/graph0');
+        if ($id >= count($hosts)) return redirect('/graph0');
         $keys = array_keys($hosts);
-        $host = $hosts[$keys[$id]];
-        //dd($host);
+        $host = $hosts[$hostid];
 
         $datas = $this->get_mac_details($hosts);
         // sessions
@@ -222,11 +219,10 @@ class GraphDeviceController extends Controller
         }
         // get hosts to plot
         $hosts_plot = [];
-        for($i=0; $i<count($keys)-1; $i++) {
-            if (in_array($keys[$i], $srcips))
-                $hosts_plot[$i] = $hosts[$keys[$i]];
-            else if (in_array($keys[$i], $dstips))
-                $hosts_plot[$i] = $hosts[$keys[$i]];
+        foreach($hosts as $key=>$value)
+        {
+            if (in_array($value["IP"], $srcips)) $hosts_plot[$key] = $hosts[$key];
+            else if (in_array($value["IP"], $dstips)) $hosts_plot[$key] = $hosts[$key];
         }
         // set icon
         foreach($hosts_plot as $key=>$value) {

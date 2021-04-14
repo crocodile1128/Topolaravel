@@ -14,8 +14,37 @@ class HostController extends Controller
 
     public function index()
     {
-        $hosts = [];
-        return view('host.index', array('hosts' => $hosts));
+        $json_path = env('JSON_PATH');
+        $json = file_get_contents($json_path);
+        $hosts = json_decode($json, true);
+        // $hosts = [];
+        return view('host.index', array(
+            'host' =>$hosts["0"],
+            'hosts' => $hosts
+        ));
+    }
+
+    public function show()
+    {
+        // "/NetworkMiner/NetworkMiner/bin/Release/hosts.json"
+        $json_path = env('JSON_PATH');
+        $json = file_get_contents($json_path);
+        $hosts = json_decode($json, true);
+        return view('host.index', array(
+            'host' =>$hosts["0"],
+            'hosts' => $hosts
+        ));
+    }
+
+    public function detail(Request $request, $host)
+    {
+        $json_path = env('JSON_PATH');
+        $json = file_get_contents($json_path);
+        $hosts = json_decode($json, true);
+        return view('host.detail', array(
+            'host' =>$hosts[$host],
+            'hosts' => $hosts
+        ));
     }
 
     public function upload(Request $request)
@@ -29,23 +58,5 @@ class HostController extends Controller
         request()->file->move(public_path('files'), $fileName);
 
         return redirect()->route('host');
-    }
-
-    public function show()
-    {
-        $json = file_get_contents('files/hosts.json');
-        $hosts = json_decode($json, true);
-        //dd($hosts);
-        return view('host.index', array('hosts' => $hosts));
-    }
-
-    public function detail(Request $request, $host)
-    {
-        $json = file_get_contents('files/hosts.json');
-        $hosts = json_decode($json, true);
-        return view('host.detail', array(
-            'host' =>$hosts[$host],
-            'hosts' => $hosts
-        ));
     }
 }
