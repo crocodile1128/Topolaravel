@@ -61,21 +61,21 @@
                         <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="w-0 flex-1 flex items-center">
-                                    <span id="mac_details" class="ml-2 flex-1 w-0 truncate">
+                                    <span id="mac_details" class="ml-2 flex-1 w-0">
                                         {{ $host["MAC"] }}
                                     </span>
                                 </div>
                             </li>
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="w-0 flex-1 flex items-center">
-                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    <span class="ml-2 flex-1 w-0">
                                         {{ $host["NIC Vender"] }}
                                     </span>
                                 </div>
                             </li>
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="w-0 flex-1 flex items-center">
-                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    <span class="ml-2 flex-1 w-0">
                                         {{ $host["MAC Age"] }}
                                     </span>
                                 </div>
@@ -99,14 +99,14 @@
                         <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="w-0 flex-1 flex items-center">
-                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    <span class="ml-2 flex-1 w-0">
                                         {{ $host["OS"] }}
                                     </span>
                                 </div>
                             </li>
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="w-0 flex-1 flex items-center">
-                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    <span class="ml-2 flex-1 w-0">
                                         {{ $host["OS Detail"] }}
                                     </span>
                                 </div>
@@ -139,7 +139,7 @@
                             @foreach($host["Net Meta"] as $detail)
                             <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                 <div class="w-0 flex-1 flex items-center">
-                                    <span class="ml-2 flex-1 w-0 truncate">
+                                    <span class="ml-2 flex-1 w-0">
                                         {{ $detail }}
                                     </span>
                                 </div>
@@ -158,7 +158,7 @@
                                 @foreach($detail as $key=>$value)
                                 <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
                                     <div class="w-0 flex-1 flex items-center">
-                                        <span class="ml-2 flex-1 w-0 truncate">
+                                        <span class="ml-2 flex-1 w-0">
                                             {{ $key . ": " . $value }}
                                         </span>
                                     </div>
