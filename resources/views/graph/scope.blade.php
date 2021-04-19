@@ -180,24 +180,46 @@
                 $collect = [];
                 foreach($hosts as $key=>$value)
                 {
-                    //dd($value);
                     $label = '';
                     foreach($labels as $l) {
-                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions") {
                             $label .= $l . ':' . count($value[$l]) . '\n';
-                        else {
-                            $label .= $l . ':' . $value[$l] . '\n';
                         }
-                    }
+                        else {
+                            if (gettype($value[$l]) == 'string')
+                                $label .= $l . ': ' . $value[$i] . '\n';
+                            else if (gettype($value[$l]) == 'array') {
+                                $result = '';
+                                if ($l == "Sqlite") {
+                                    foreach($value[$l] as $idx=>detail) {
+                                        $result .= $detail[0] . '.';
+                                    } // end foreach
+                                } // end if
+                                $label .= $i . ':' . $result . '\n';
+                            } // end if
+                        } // end if
+                    } // end foreach
 
                     $title = '';
                     foreach($titles as $l) {
-                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions") {
                             $title .= $l . ':' . count($value[$l]) . '\n';
-                        else {
-                            $title .= $l . ':' . $value[$l] . '\n';
                         }
-                    }
+                        else {
+                            if (gettype($value[$l]) == 'string')
+                                $title .= $l . ': ' . $value[$i] . '\n';
+                            else if (gettype($value[$l]) == 'array') {
+                                $result = '';
+                                if ($l == "Sqlite") {
+                                    foreach($value[$l] as $idx=>detail) {
+                                        $result .= $detail[0] . '.';
+                                    } // end foreach
+                                } // end if
+                                $title .= $i . ':' . $result . '\n';
+                            } // end if
+                        } // end if
+                    } // end foreach
+
                     print ('{ id: ' . $key . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
 
                     if ($value["Icon"] != "null")

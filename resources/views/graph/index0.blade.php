@@ -100,6 +100,12 @@
                                 <span class="ml-2">Outgoing Session Count</span>
                             </label>
                         </div>
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="select_item[]" value="Sqlite">
+                                <span class="ml-2">Sqlite Details</span>
+                            </label>
+                        </div>
 
                         <button type="submit" class="bg-blue-500 hover:bg-blue-400 rounded-lg text-white p-2 pl-4 pr-4">
                             <p class="font-semibold text-xs">Apply</p>
@@ -133,9 +139,19 @@
                             $label .= $l . ':' . count($value[$l]) . '\n';
                         }
                         else {
-                            $label .= $l . ':' . $value[$l] . '\n';
-                        }
-                    }
+                            if (gettype($value[$l]) == 'string')
+                                $label .= $l . ': ' . $value[$i] . '\n';
+                            else if (gettype($value[$l]) == 'array') {
+                                $result = '';
+                                if ($l == "Sqlite") {
+                                    foreach($value[$l] as $idx=>detail) {
+                                        $result .= $detail[0] . '.';
+                                    } // end foreach
+                                } // end if
+                                $label .= $i . ':' . $result . '\n';
+                            } // end if
+                        } // end if
+                    } // end foreach
 
                     $title = '';
                     foreach($titles as $l) {
@@ -143,9 +159,19 @@
                             $title .= $l . ':' . count($value[$l]) . '\n';
                         }
                         else {
-                            $title .= $l . ':' . $value[$l] . '\n';
-                        }
-                    }
+                            if (gettype($value[$l]) == 'string')
+                                $title .= $l . ': ' . $value[$i] . '\n';
+                            else if (gettype($value[$l]) == 'array') {
+                                $result = '';
+                                if ($l == "Sqlite") {
+                                    foreach($value[$l] as $idx=>detail) {
+                                        $result .= $detail[0] . '.';
+                                    } // end foreach
+                                } // end if
+                                $title .= $i . ':' . $result . '\n';
+                            } // end if
+                        } // end if
+                    } // end foreach
                     print ('{ id: ' . $key . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
 
                     if ($value["Icon"] != "null")

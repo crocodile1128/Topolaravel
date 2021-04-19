@@ -49,6 +49,13 @@ class GraphDeviceController extends Controller
         return $sql_relate;
     }
 
+    public function add_sql_to_hosts($hosts) {
+        foreach($hosts as $key=>$host) {
+            $hosts[$key]['Sqlite'] = $this->sql_relate($host['IP']);
+        }
+        return $hosts;
+    }
+
     public function get_mac_details($hosts) {
         $devices = [];
         $venders = [];
@@ -114,9 +121,14 @@ class GraphDeviceController extends Controller
 
     public function index()
     {
+        // get hosts details from json
         $hosts = $this->get_json();
-        $datas = $this->get_mac_details($hosts);
+        // combine sqlite details from csv
+        $hosts = $this->add_sql_to_hosts($hosts);
+        // get origin host count
         $hcount = count($hosts);
+
+        $datas = $this->get_mac_details($hosts);
         $labels = ["IP"];
         $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
 
@@ -130,8 +142,13 @@ class GraphDeviceController extends Controller
     }
 
     public function search(Request $request) {
+        // get hosts details from json
         $hosts = $this->get_json();
+        // combine sqlite details from csv
+        $hosts = $this->add_sql_to_hosts($hosts);
+        // get origin host count
         $hcount = count($hosts);
+
         // to search
         $tosearch = $request->search;
         // set label
@@ -166,8 +183,13 @@ class GraphDeviceController extends Controller
     }
 
     public function detail_to_show(Request $request) {
+        // get hosts details from json
         $hosts = $this->get_json();
+        // combine sqlite details from csv
+        $hosts = $this->add_sql_to_hosts($hosts);
+        // get origin host count
         $hcount = count($hosts);
+
         $datas = $this->get_mac_details($hosts);
 
         $labels = $request->select_item;
@@ -183,7 +205,13 @@ class GraphDeviceController extends Controller
     }
 
     public function scope($hostid) {
+        // get hosts details from json
         $hosts = $this->get_json();
+        // combine sqlite details from csv
+        $hosts = $this->add_sql_to_hosts($hosts);
+        // get origin host count
+        $hcount = count($hosts);
+
         $id = (int)$hostid;
 
         if ($id >= count($hosts)) return redirect('/graph0');
