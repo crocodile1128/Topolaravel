@@ -123,18 +123,15 @@
                 $ages = $datas["ages"];
                 $device_conn = $datas["device_conn"];
                 $device_count = $datas["device_count"];
-                $i = 0;
                 $host2id = [];
-                $host = [];
                 $id = [];
-                //dd($hosts);
                 foreach($hosts as $key=>$value)
                 {
-                    //dd($value);
                     $label = '';
                     foreach($labels as $l) {
-                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions") {
                             $label .= $l . ':' . count($value[$l]) . '\n';
+                        }
                         else {
                             $label .= $l . ':' . $value[$l] . '\n';
                         }
@@ -142,13 +139,14 @@
 
                     $title = '';
                     foreach($titles as $l) {
-                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions")
+                        if ($l=="Incoming Sessions" || $l=="Outgoing Sessions") {
                             $title .= $l . ':' . count($value[$l]) . '\n';
+                        }
                         else {
                             $title .= $l . ':' . $value[$l] . '\n';
                         }
                     }
-                    print ('{ id: ' . $i . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
+                    print ('{ id: ' . $key . ', label:"' . $label . '", title: "' . $title . '", shape: "circularImage",');
 
                     if ($value["Icon"] != "null")
                         print ('image: "' . str_replace("\\", "\/" , $value["Icon"]) . '"},');
@@ -171,34 +169,27 @@
                             else
                                 print ('image: "/img/computer.jpg"},');
                         }
-
-                    array_push($host, $value["IP"]);
-                    $i++;
+                    $host2id[$value["IP"]] = $key;
                 }
                 for($j=0; $j<count($devices); $j++)
                 {
-                    // $string = "002590733014";
-                    // $result = implode(":", str_split($string, 2));
-                    // dd($result);
                     if ($devices[$j] != "Unknown MAC")
-                        $mac = implode(":", str_split($devices[$j], 2));
+                        $mac = implode(":", str_split($devices[$j], 2)); // $string = "002590733014";$result = implode(":", str_split($string, 2));
                     else
                         $mac = $devices[$j];
                     $label = $mac . '\n' . $venders[$j] . '\n' . $ages[$j];
                     $title = $mac . '\n' . $venders[$j] . '\n' . $ages[$j];
-                    print ('{ id: ' . $i . ', label:"' . $label . '", shape: "image", image: "/img/network_socket.png", title: "' . $title . '", color:{border: "gray", highlight: { border: "gray"},}},');
+                    $idx = $hcount + $j;
+                    print ('{ id: ' . $idx . ', label:"' . $label . '", shape: "image", image: "/img/network_socket.png", title: "' . $title . '", color:{border: "gray", highlight: { border: "gray"},}},');
                     // if (!is_string($device))
-                    array_push($host, $devices[$j] . "_");
-                    $i++;
+                    $host2id[$devices[$j] . "_"]=$idx;
                 }
-                $host2id = array_flip($host);
             ?>
         ]);
         // create an array with edges
         var edges = new vis.DataSet([
             <?php
                 foreach($hosts as $key=>$host) {
-
                     for($i=0; $i < count($devices); $i++){
                         $title = "";
                         $thick = 2;

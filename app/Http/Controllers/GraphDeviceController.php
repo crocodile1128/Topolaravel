@@ -6,21 +6,6 @@ use Illuminate\Http\Request;
 
 class GraphDeviceController extends Controller
 {
-    public function index()
-    {
-        $hosts = $this->get_json();
-        $datas = $this->get_mac_details($hosts);
-        $labels = ["IP"];
-        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
-
-        return view('graph.index0', array(
-            'datas' => $datas,
-            'hosts' => $datas["hosts"],
-            'labels' => $labels,
-            'titles' => $titles,
-        ));
-    }
-
     public function get_json() {
         $json_path = env('JSON_PATH');
         $json = file_get_contents($json_path);
@@ -32,6 +17,36 @@ class GraphDeviceController extends Controller
             $hosts[$key]["Icon"] = str_replace(public_path(), "", $hosts[$key]["Icon"]);
         }
         return $hosts;
+    }
+
+    public function get_sql3()
+    {
+        $csv_path = env('CSV_PATH');
+        $first = 1;
+        $sqls = [];
+        if (($handle = fopen($csv_path, "r")) != FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) != FALSE) {
+                if ($first == 1) {
+                    $first = 0;
+                    continue;
+                } // end if
+                array_push($sqls, $data);
+            } // end while
+        } // end if
+        return $sqls;
+    }
+
+    public function sql_relate($string) {
+        $sqls = $this->get_sql3();
+        $sql_relate = [];
+        foreach($sqls as $sql) {
+            for ($i=0; $i<5; $i++) {
+                if (str_contains($sql[$i], $string)) {
+                    array_push($sql_relate, $sql);
+                } // end if
+            } // end for
+        } // end foreach
+        return $sql_relate;
     }
 
     public function get_mac_details($hosts) {
@@ -97,9 +112,26 @@ class GraphDeviceController extends Controller
         );
     }
 
-    public function search(Request $request) {
+    public function index()
+    {
         $hosts = $this->get_json();
         $datas = $this->get_mac_details($hosts);
+        $hcount = count($hosts);
+        $labels = ["IP"];
+        $titles = ["IP", "Incoming Sessions", "Outgoing Sessions"];
+
+        return view('graph.index0', array(
+            'datas' => $datas,
+            'hosts' => $datas["hosts"],
+            'hcount' => $hcount,
+            'labels' => $labels,
+            'titles' => $titles,
+        ));
+    }
+
+    public function search(Request $request) {
+        $hosts = $this->get_json();
+        $hcount = count($hosts);
         // to search
         $tosearch = $request->search;
         // set label
@@ -115,7 +147,6 @@ class GraphDeviceController extends Controller
                 //dd($hosts[$keys[$i]]);
                 $hosts_plot[$i] = $hosts[$keys[$i]];
             }
-        //dd($hosts_plot);
         // check Mac
         for($i=0;$i<count($hosts);$i++)
             if (str_contains($hosts[$keys[$i]]["MAC"], $tosearch)){
@@ -123,9 +154,12 @@ class GraphDeviceController extends Controller
                 $hosts_plot[$i] = $hosts[$keys[$i]];
             }
         // check Domain
+        $datas = $this->get_mac_details($hosts);
+
         return view('graph.index0', array(
             'datas' => $datas,
             'hosts' => $hosts_plot,
+            'hcount' => $hcount,
             'labels' => $labels,
             'titles' => $titles,
         ));
@@ -133,6 +167,7 @@ class GraphDeviceController extends Controller
 
     public function detail_to_show(Request $request) {
         $hosts = $this->get_json();
+        $hcount = count($hosts);
         $datas = $this->get_mac_details($hosts);
 
         $labels = $request->select_item;
@@ -141,6 +176,7 @@ class GraphDeviceController extends Controller
         return view('graph.index0', array(
             'datas' => $datas,
             'hosts' => $datas["hosts"],
+            'hcount' => $hcount,
             'labels' => $labels,
             'titles' => $titles,
         ));
@@ -224,6 +260,9 @@ class GraphDeviceController extends Controller
             if (in_array($value["IP"], $srcips)) $hosts_plot[$key] = $hosts[$key];
             else if (in_array($value["IP"], $dstips)) $hosts_plot[$key] = $hosts[$key];
         }
+
+        // get sql data to show
+        $sql_relate = $this->sql_relate($host['IP']);
         // set icon
         foreach($hosts_plot as $key=>$value) {
             $hosts_plot[$key]["Icon"] = str_replace(public_path(), "", $hosts_plot[$key]["Icon"]);
@@ -240,6 +279,7 @@ class GraphDeviceController extends Controller
             'count' => $count,
             'labels' => $labels,
             'titles' => $titles,
+            'sqls' => $sql_relate
         ));
     }
 

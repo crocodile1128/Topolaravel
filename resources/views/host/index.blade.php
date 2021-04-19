@@ -31,6 +31,7 @@
                         <th>MAC Address</th>
                         <th>NIC Vender</th>
                         <th>Operating System</th>
+                        <th>Antivirus</th>
                         <th>More Details</th>
                     </tr>
                 </thead>
@@ -46,10 +47,10 @@
                             @endif
                             <th>{{ $val["NIC Vender"] }}</th>
                             <th>{{ $val["OS"] }}</th>
-                            {{-- <th>{{ $val["OS Detail"] }}</th>
+                            {{-- <th>{{ $val["OS Detail"] }}</th> --}}
                             <th>
                                 {{ implode(', ', $val['Queried DNS']) }}
-                            </th> --}}
+                            </th>
                             <th>
                                 <button class="btn btn-blue">
                                     <a href="{{ route('detail', $key) }}">Details</a>
@@ -185,6 +186,24 @@
                                         </div>
                                     </li>
                                     @endforeach
+                                @endforeach
+                            </ul>
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Sqlite3
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                                @foreach($sqls as $sql)
+                                <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                                    <div class="w-0 flex-1 flex items-center">
+                                        <span class="ml-2 flex-1 w-0">
+                                            {{ $sql[0] . ': ' . $sql[1] }}
+                                        </span>
+                                    </div>
+                                </li>
                                 @endforeach
                             </ul>
                         </dd>
