@@ -140,15 +140,17 @@
                         }
                         else {
                             if (gettype($value[$l]) == 'string')
-                                $label .= $l . ': ' . $value[$i] . '\n';
+                                $label .= $l . ': ' . $value[$l] . '\n';
                             else if (gettype($value[$l]) == 'array') {
                                 $result = '';
-                                if ($l == "Sqlite") {
-                                    foreach($value[$l] as $idx=>detail) {
-                                        $result .= $detail[0] . '.';
-                                    } // end foreach
+                                if ($l == 'Sqlite') {
+                                    if ($value[$l] != null) {
+                                        foreach($value[$l] as $idx=>$detail) {
+                                            $result .= $detail[0] . '.';
+                                        } // end foreach
+                                    } // end if
                                 } // end if
-                                $label .= $i . ':' . $result . '\n';
+                                $label .= $l . ':' . $result . '\n';
                             } // end if
                         } // end if
                     } // end foreach
@@ -160,15 +162,17 @@
                         }
                         else {
                             if (gettype($value[$l]) == 'string')
-                                $title .= $l . ': ' . $value[$i] . '\n';
+                                $title .= $l . ': ' . $value[$l] . '\n';
                             else if (gettype($value[$l]) == 'array') {
                                 $result = '';
-                                if ($l == "Sqlite") {
-                                    foreach($value[$l] as $idx=>detail) {
-                                        $result .= $detail[0] . '.';
-                                    } // end foreach
+                                if ($l == 'Sqlite') {
+                                    if ($value[$l] != null) {
+                                        foreach($value[$l] as $idx=>$detail) {
+                                            $result .= $detail[0] . '.';
+                                        } // end foreach
+                                    } // end if
                                 } // end if
-                                $title .= $i . ':' . $result . '\n';
+                                $title .= $l . ':' . $result . '\n';
                             } // end if
                         } // end if
                     } // end foreach
