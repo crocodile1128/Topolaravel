@@ -1096,225 +1096,242 @@ namespace NetworkMiner {
                     //yield return nhtv;
             }
         }
+        private string GetDataByHost(PacketParser.NetworkHost networkHost)
+        {
+            /* Input networkHost, generate detail string */
+            // Columns in CSV
+            string macAddress = null;
+            string macVendor = null;
+            string ipAddress = null;
+            string osType = null;
+            string osDetail = null;
+            string hostName = null;
+            string openTcpPorts = null;
+            string networkServiceMetadata = null;
+            string inSessions = null;
+            string outSessions = null;
+            string details = null;
+            string queriedDNS = null;
+            string faviconKey = null;
+
+            // ### Address
+            // MAC Address
+            if (networkHost.MacAddress != null)
+            {
+                macAddress = "\"MAC\":\"" + networkHost.MacAddress.ToString() + "\",";
+                // MAC Vender
+
+                if (PacketParser.Fingerprints.MacCollection.GetMacCollection(System.IO.Path.GetFullPath(System.Windows.Forms.Application.ExecutablePath)).TryGetMacVendor(networkHost.MacAddress, out macVendor))
+                {
+                    //macVendor = macVendor.Replace(",", " ");
+                    macAddress = macAddress + "\"NIC Vender\":\"" + macVendor + "\",";
+                }
+                else
+                    macAddress = macAddress + "\"NIC Vender\":\"Unknown\",";
+                // MAC Ages
+                if (PacketParser.Fingerprints.MacAges.GetMacAges(System.IO.Path.GetFullPath(System.Windows.Forms.Application.ExecutablePath)).TryGetDateAndSource(networkHost.MacAddress.ToString(), out DateTime date, out string source))
+                    macAddress = macAddress + "\"MAC Age\":\"" + date.ToShortDateString() + "\",";
+                else
+                    macAddress = macAddress + "\"MAC Age\":\"Unknown\",";
+
+            }
+            else
+                macAddress = "\"MAC\":\"Unknown MAC\",\"NIC Vender\":\"Unknown\",\"MAC Age\":\"Unknown\",";
+            // Favicon 
+            if (networkHost.FaviconKey != null)
+            {
+                faviconKey = "\"Icon\":\"" + networkHost.FaviconKey.Replace("\\", "\\\\") + "\",";
+            }
+            else
+                faviconKey = "\"Icon\":\"null\",";
+            // IP Address
+            if (networkHost.IPAddress != null) ipAddress = "\"IP\":\"" + networkHost.IPAddress.ToString() + "\",";
+            else ipAddress = "\"IP\":\"Unknown IP\",";
+
+            // ### OS
+            // OS 
+            if (networkHost.OS != null) osType = "\"OS\":\"" + networkHost.OS.ToString() + "\",";
+            else osType = "\"OS\":\"Unknown OS\",";
+
+            // OS Details
+            int satori_flag = 0;
+            foreach (PacketParser.Fingerprints.IOsFingerprinter fingerprinter in networkHost.OsFingerprinters)
+            {
+                if (fingerprinter.Name == "Satori TCP")
+                {
+                    satori_flag = 1;
+                    osDetail = "\"OS Detail\":\"" + networkHost.GetOsDetails(fingerprinter) + "\",";
+                }
+                break;
+            }
+            if (satori_flag == 0)
+                osDetail = "\"OS Detail\":\"Unknown\",";
+            // ### Domain
+            // queried DNS (ip, NetBios)
+
+            if (networkHost.queriedDnsNameList.Count != 0)
+            {
+                queriedDNS = "\"Queried DNS\":[";
+                int i;
+                for (i = 0; i < networkHost.queriedDnsNameList.Count - 1; i++)
+                {
+                    if (queriedDNS != null) queriedDNS += "\"" + networkHost.queriedDnsNameList[i] + "\",";
+                    else queriedDNS += "\"" + networkHost.queriedDnsNameList[i] + "\",";
+                }
+                queriedDNS += "\"" + networkHost.queriedDnsNameList[i] + "\"";
+                queriedDNS += "],";
+            }
+            else
+                queriedDNS = "\"Queried DNS\":[],";
+            //if (networkHost.HostDetailCollection)
+            // Host Name
+            if (networkHost.HostName != null)
+            {
+                hostName = "\"Host Name\":\"" + networkHost.HostName.ToString() + "\",";
+            }
+            else
+            {
+                hostName = "\"Host Name\":\"Unknown\",";
+            }
+            // ### Sessions
+            if (networkHost.OpenTcpPorts.Count() != 0)
+            {
+                openTcpPorts = "\"Open Tcp Ports\":\"" + networkHost.OpenTcpPorts[0] + "\",";
+            }
+            else
+                openTcpPorts = "\"Open Tcp Ports\": \"Unknown\",";
+
+            if (networkHost.NetworkServiceMetadataList.Count != 0)
+            {
+                networkServiceMetadata = "\"Net Meta\":[";
+                int i;
+                for (i = 0; i < networkHost.NetworkServiceMetadataList.Count - 1; i++)
+                {
+                    networkServiceMetadata += "\"" + networkHost.NetworkServiceMetadataList[networkHost.NetworkServiceMetadataList.Keys[i]] + "\",";
+                }
+                networkServiceMetadata += "\"" + networkHost.NetworkServiceMetadataList[networkHost.NetworkServiceMetadataList.Keys[i]] + "\"";
+                networkServiceMetadata += "],";
+            }
+            else
+                networkServiceMetadata = "\"Net Meta\":[],";
+
+            // #### Incoming Sessions
+            if (networkHost.IncomingSessionList.Count != 0)
+            {
+                inSessions = "\"Incoming Sessions\":[";
+                int i;
+                for (i = 0; i < networkHost.IncomingSessionList.Count - 1; i++)
+                {
+                    inSessions += "\"" + networkHost.IncomingSessionList[i] + "\",";
+                }
+                inSessions += "\"" + networkHost.IncomingSessionList[i] + "\"";
+                inSessions += "],";
+            }
+            else
+                inSessions = "\"Incoming Sessions\":[],";
+            if (networkHost.OutgoingSessionList.Count != 0)
+            {
+                outSessions = "\"Outgoing Sessions\":[";
+                int i;
+                for (i = 0; i < networkHost.OutgoingSessionList.Count - 1; i++)
+                {
+                    outSessions += "\"" + networkHost.OutgoingSessionList[i] + "\",";
+                }
+                outSessions += "\"" + networkHost.OutgoingSessionList[i] + "\"";
+                outSessions += "],";
+            }
+            else
+                outSessions = "\"Outgoing Sessions\":[],";
+            // ### Others Details
+
+            if (networkHost.HostDetailCollection.Count > 0)
+            {
+                details = "\"Details\":[";
+                int i;
+                for (i = 0; i < networkHost.HostDetailCollection.Count - 1; i++)
+                {
+
+                    if (networkHost.HostDetailCollection.Keys[i] != "favicon")
+                        details += "{\"" + networkHost.HostDetailCollection.Keys[i].Replace("\"", "") + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}" + ",";
+                }
+                if (networkHost.HostDetailCollection.Keys[i] != "favicon")
+                    details += "{\"" + networkHost.HostDetailCollection.Keys[i] + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}]";
+            }
+            else
+                details = "\"Details\":[]";
+
+            return  macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details;
+        }
+
+        private void WriteToFile(string filename, string content)
+        {
+            FileStream fs = new FileStream(filename, FileMode.Append, FileAccess.Write);
+            byte[] buf = null;
+            int len;
+            buf = Encoding.UTF8.GetBytes(content);
+            len = buf.Length;
+            fs.Write(buf, 0, len);
+            fs.Close();
+        }
 
         private void AddNetworkHostsToTreeView(IEnumerable<PacketParser.NetworkHost> hosts) {
             List<TreeNode> tnList = new List<TreeNode>();
+            int onejson = 1; // 0: export to multiple json files (dispart with subnet); 1: export to only one json file (hosts.json)
+
             if (outputJson == true)
             {
-                int hostCount = hosts.Count();
-                int key = 0;
-                // File Stream Object
-                string fOut = "hosts.json";
-                FileStream fsOut = new FileStream(fOut, FileMode.Create, FileAccess.Write);
-                string strToWrite;
-                int numBytesToWrite;
-                // Columns in CSV
-                string macAddress;
-                string macVendor;
-                string ipAddress;
-                string osType;
-                string osDetail;
-                string hostName;
-                string openTcpPorts;
-                string networkServiceMetadata;
-                string inSessions;
-                string outSessions;
-                string details;
-                string queriedDNS;
-                string faviconKey;
-
-                // Write first row
-                //strToWrite = "MAC\tHOST\tOS\tOS Details\tHost Name\tQueried DNS\tSessions In\tSessions Out\tDetails\n";
-                strToWrite = "{";
-                numBytesToWrite = strToWrite.Length;
-                byte[] buf = Encoding.UTF8.GetBytes(strToWrite);
-                fsOut.Write(buf, 0, numBytesToWrite);
-                foreach (PacketParser.NetworkHost networkHost in hosts)
+                /* export to one json file */
+                if (onejson == 1)
                 {
-                    strToWrite = null;
-                    macAddress = null;
-                    macVendor = null;
-                    ipAddress = null;
-                    osType = null;
-                    osDetail = null;
-                    hostName = null;
-                    openTcpPorts = null;
-                    networkServiceMetadata = null;
-                    inSessions = null;
-                    outSessions = null;
-                    details = null;
-                    queriedDNS = null;
-                    faviconKey = null;
+                    // Export file info
+                    string filename = "hosts.json";
+                    int key = 0;
+                    int len = 0;
+                    byte[] buf = null;
 
-                    NetworkHostTreeNode treeNode = new NetworkHostTreeNode(networkHost, this.ipLocator, this.hostDetailsGenerator, this.GetSiblings);
+                    FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+                    // json Start {
+                    //WriteToFile(filename, "{");
+                    buf = Encoding.UTF8.GetBytes("{");
+                    len = buf.Length;
+                    fs.Write(buf, 0, len);
 
-                    if (this.ipColorHandler != null)
-                        this.ipColorHandler.Colorize(networkHost.IPAddress, treeNode);
-
-                    tnList.Add(treeNode);
-
-                    // Write to file
-                    // ### Address
-                    // MAC Address
-                    if (networkHost.MacAddress != null)
+                    // json content
+                    string content = null;
+                    int hostCount = hosts.Count();
+                    // original code
+                    foreach (PacketParser.NetworkHost networkHost in hosts)
                     {
-                        macAddress = "\"MAC\":\"" + networkHost.MacAddress.ToString() + "\",";
-                        // MAC Vender
+                        // Origin code
+                        NetworkHostTreeNode treeNode = new NetworkHostTreeNode(networkHost, this.ipLocator, this.hostDetailsGenerator, this.GetSiblings);
 
-                        if (PacketParser.Fingerprints.MacCollection.GetMacCollection(System.IO.Path.GetFullPath(System.Windows.Forms.Application.ExecutablePath)).TryGetMacVendor(networkHost.MacAddress, out macVendor))
+                        if (this.ipColorHandler != null)
+                            this.ipColorHandler.Colorize(networkHost.IPAddress, treeNode);
+
+                        tnList.Add(treeNode);
+
+                        // Additional code
+                        if (key < hostCount - 1)
                         {
-                            //macVendor = macVendor.Replace(",", " ");
-                            macAddress = macAddress + "\"NIC Vender\":\"" + macVendor + "\",";
+                            content = "\"" + key.ToString() + "\":{" + GetDataByHost(networkHost) + "},\n";
                         }
                         else
-                            macAddress = macAddress + "\"NIC Vender\":\"Unknown\",";
-                        // MAC Ages
-                        if (PacketParser.Fingerprints.MacAges.GetMacAges(System.IO.Path.GetFullPath(System.Windows.Forms.Application.ExecutablePath)).TryGetDateAndSource(networkHost.MacAddress.ToString(), out DateTime date, out string source))
-                            macAddress = macAddress + "\"MAC Age\":\"" + date.ToShortDateString() + "\",";
-                        else
-                            macAddress = macAddress + "\"MAC Age\":\"Unknown\",";
-
-                    }
-                    else
-                        macAddress = "\"MAC\":\"Unknown MAC\",\"NIC Vender\":\"Unknown\",\"MAC Age\":\"Unknown\",";
-                    // Favicon 
-                    if (networkHost.FaviconKey != null)
-                    {
-                        faviconKey = "\"Icon\":\"" + networkHost.FaviconKey.Replace("\\", "\\\\") + "\",";
-                    }
-                    else
-                        faviconKey = "\"Icon\":\"null\",";
-                    // IP Address
-                    if (networkHost.IPAddress != null) ipAddress = "\"IP\":\"" + networkHost.IPAddress.ToString() + "\",";
-                    else ipAddress = "\"IP\":\"Unknown IP\",";
-
-                    // ### OS
-                    // OS 
-                    if (networkHost.OS != null) osType = "\"OS\":\"" + networkHost.OS.ToString() + "\",";
-                    else osType = "\"OS\":\"Unknown OS\",";
-
-                    // OS Details
-                    int satori_flag = 0;
-                    foreach (PacketParser.Fingerprints.IOsFingerprinter fingerprinter in networkHost.OsFingerprinters)
-                    {
-                        if (fingerprinter.Name == "Satori TCP")
-                        {
-                            satori_flag = 1;
-                            osDetail = "\"OS Detail\":\"" + networkHost.GetOsDetails(fingerprinter) + "\",";
+                        { // end json
+                            content = "\"" + key.ToString() + "\":{" + GetDataByHost(networkHost) + "}}";
                         }
-                        break;
+                        // WriteToFile(filename, content);
+                        buf = Encoding.UTF8.GetBytes(content);
+                        len = buf.Length;
+                        fs.Write(buf, 0, len);
+                        key += 1;
                     }
-                    if (satori_flag == 0)
-                        osDetail = "\"OS Detail\":\"Unknown\",";
-                    // ### Domain
-                    // queried DNS (ip, NetBios)
-
-                    if (networkHost.queriedDnsNameList.Count != 0)
-                    {
-                        queriedDNS = "\"Queried DNS\":[";
-                        int i;
-                        for (i = 0; i < networkHost.queriedDnsNameList.Count - 1; i++)
-                        {
-                            if (queriedDNS != null) queriedDNS += "\"" + networkHost.queriedDnsNameList[i] + "\",";
-                            else queriedDNS += "\"" + networkHost.queriedDnsNameList[i] + "\",";
-                        }
-                        queriedDNS += "\"" + networkHost.queriedDnsNameList[i] + "\"";
-                        queriedDNS += "],";
-                    }
-                    else
-                        queriedDNS = "\"Queried DNS\":[],";
-                    //if (networkHost.HostDetailCollection)
-                    // Host Name
-                    if (networkHost.HostName != null)
-                    {
-                        hostName = "\"Host Name\":\"" + networkHost.HostName.ToString() + "\",";
-                    }
-                    else
-                    {
-                        hostName = "\"Host Name\":\"Unknown\",";
-                    }
-                    // ### Sessions
-                    if (networkHost.OpenTcpPorts.Count() != 0)
-                    {
-                        openTcpPorts = "\"Open Tcp Ports\":\"" + networkHost.OpenTcpPorts[0] + "\",";
-                    }
-                    else
-                        openTcpPorts = "\"Open Tcp Ports\": \"Unknown\",";
-
-                    if (networkHost.NetworkServiceMetadataList.Count != 0)
-                    {
-                        networkServiceMetadata = "\"Net Meta\":[";
-                        int i;
-                        for (i = 0; i < networkHost.NetworkServiceMetadataList.Count - 1; i++)
-                        {
-                            networkServiceMetadata += "\"" + networkHost.NetworkServiceMetadataList[networkHost.NetworkServiceMetadataList.Keys[i]] + "\",";
-                        }
-                        networkServiceMetadata += "\"" + networkHost.NetworkServiceMetadataList[networkHost.NetworkServiceMetadataList.Keys[i]] + "\"";
-                        networkServiceMetadata += "],";
-                    }
-                    else
-                        networkServiceMetadata = "\"Net Meta\":[],";
-
-                    // #### Incoming Sessions
-                    if (networkHost.IncomingSessionList.Count != 0)
-                    {
-                        inSessions = "\"Incoming Sessions\":[";
-                        int i;
-                        for (i = 0; i < networkHost.IncomingSessionList.Count - 1; i++)
-                        {
-                            inSessions += "\"" + networkHost.IncomingSessionList[i] + "\",";
-                        }
-                        inSessions += "\"" + networkHost.IncomingSessionList[i] + "\"";
-                        inSessions += "],";
-                    }
-                    else
-                        inSessions = "\"Incoming Sessions\":[],";
-                    if (networkHost.OutgoingSessionList.Count != 0)
-                    {
-                        outSessions = "\"Outgoing Sessions\":[";
-                        int i;
-                        for (i = 0; i < networkHost.OutgoingSessionList.Count - 1; i++)
-                        {
-                            outSessions += "\"" + networkHost.OutgoingSessionList[i] + "\",";
-                        }
-                        outSessions += "\"" + networkHost.OutgoingSessionList[i] + "\"";
-                        outSessions += "],";
-                    }
-                    else
-                        outSessions = "\"Outgoing Sessions\":[],";
-                    // ### Others Details
-
-                    if (networkHost.HostDetailCollection.Count > 0)
-                    {
-                        details = "\"Details\":[";
-                        int i;
-                        for (i = 0; i < networkHost.HostDetailCollection.Count - 1; i++)
-                        {
-                            
-                            if (networkHost.HostDetailCollection.Keys[i] != "favicon")
-                                details += "{\"" + networkHost.HostDetailCollection.Keys[i].Replace("\"", "") + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}" + ",";
-                        }
-                        if (networkHost.HostDetailCollection.Keys[i] != "favicon")
-                            details += "{\"" + networkHost.HostDetailCollection.Keys[i] + "\"" + ":" + "\"" + networkHost.HostDetailCollection[i].Replace("\"", "") + "\"}]";
-                    }
-                    else
-                        details = "\"Details\":[]";
-
-                    if (key < hostCount - 1)
-                        strToWrite = "\"" + key.ToString() + "\":{" + macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "},\n";
-                    else
-                        strToWrite = "\"" + key.ToString() + "\":{" + macAddress + faviconKey + ipAddress + osType + osDetail + hostName + queriedDNS + openTcpPorts + networkServiceMetadata + inSessions + outSessions + details + "}}";
-                    numBytesToWrite = strToWrite.Length;
-                    buf = Encoding.UTF8.GetBytes(strToWrite);
-                    fsOut.Write(buf, 0, numBytesToWrite);
-                    key++;
+                    fs.Close();
                 }
-                //strToWrite = "\"test\":\"{}\"}";
-                //numBytesToWrite = strToWrite.Length;
-                //buf = Encoding.UTF8.GetBytes(strToWrite);
-                //fsOut.Write(buf, 0, numBytesToWrite);
-                fsOut.Close();
 
+                else /* export to multiple json file */
+                {
+
+                }
             }
 
             this.networkHostTreeView.Nodes.AddRange(tnList.ToArray());

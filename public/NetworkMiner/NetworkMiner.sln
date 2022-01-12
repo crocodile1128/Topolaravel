@@ -9,14 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkWrapper", "WinPCapWr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PacketParser", "PacketParser\PacketParser.csproj", "{6076F9F3-F975-469E-9E0C-CACCCFF9629F}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NetresecShared", "NetresecShared\NetresecShared.shproj", "{C11C6BA2-4AE3-4F40-85A0-D998957FA9F5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedUtils", "SharedUtils\SharedUtils.csproj", "{AC038CD9-F50A-436F-8FE3-A194275C4362}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		NetresecShared\NetresecShared.projitems*{c11c6ba2-4ae3-4f40-85a0-d998957fa9f5}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
