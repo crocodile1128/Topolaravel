@@ -187,16 +187,7 @@
                         }
                         else {
                             if (gettype($value[$l]) == 'string')
-                                $label .= $l . ': ' . $value[$i] . '\n';
-                            else if (gettype($value[$l]) == 'array') {
-                                $result = '';
-                                if ($l == "Sqlite") {
-                                    foreach($value[$l] as $idx=>detail) {
-                                        $result .= $detail[0] . '.';
-                                    } // end foreach
-                                } // end if
-                                $label .= $i . ':' . $result . '\n';
-                            } // end if
+                                $label .= $l . ': ' . $value[$l] . '\n';
                         } // end if
                     } // end foreach
 
@@ -207,16 +198,7 @@
                         }
                         else {
                             if (gettype($value[$l]) == 'string')
-                                $title .= $l . ': ' . $value[$i] . '\n';
-                            else if (gettype($value[$l]) == 'array') {
-                                $result = '';
-                                if ($l == "Sqlite") {
-                                    foreach($value[$l] as $idx=>detail) {
-                                        $result .= $detail[0] . '.';
-                                    } // end foreach
-                                } // end if
-                                $title .= $i . ':' . $result . '\n';
-                            } // end if
+                                $title .= $l . ': ' . $value[$l] . '\n';
                         } // end if
                     } // end foreach
 
